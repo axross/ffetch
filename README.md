@@ -13,11 +13,11 @@ EasyAgent is nothing more than a wrapper library of [fetch API](https://fetch.sp
 ## Example
 
 ```javascript
-import request from 'easyagent';
+import EasyAgent from 'easyagent';
 
-request.get('https://api.github.com/search/repositories')
-  .setQueries({ q: 'easyagent' })
-  .getJSON()
+EasyAgent.get('https://api.github.com/search/repositories')
+  .setQueries({ q: 'easyagent' })  // append "?q=easyagent"  to url
+  .fetchJSON()                     // returns promise
   .then(json => {
     console.log(json);
   })
@@ -28,53 +28,53 @@ request.get('https://api.github.com/search/repositories')
 
 ## Installation
 
-```
+```sh
 $ npm i -S easyagent
 ```
 
 ```javascript
 // in ES5
-var request = require('easyagent');
+var EasyAgent = require('easyagent');
 
 // in ES6
-import request from 'easyagent';
+import EasyAgent from 'easyagent';
 ```
 
 ## API
 
-### request.get(url, [options])
-### request.post(url, [options])
-### request.put(url, [options])
-### request.del(url, [options])
-### request.head(url, [options])
-### request.opt(url, [options])
+### EasyAgent.get(url, [options])
+### EasyAgent.post(url, [options])
+### EasyAgent.put(url, [options])
+### EasyAgent.del(url, [options])
+### EasyAgent.head(url, [options])
+### EasyAgent.opt(url, [options])
 
 returns instance of EasyAgent.
 
 ```javascript
-const ea = request.get('https://api.github.com/search/repositories');
+const ea = EasyAgent.get('https://api.github.com/search/repositories');
 // => instance of EasyAgent
 ```
 
 #### ea.setUrl(url)
 #### ea.setMethod(method)
 #### ea.setHeaders(url)
-#### ea.setBody(body)
-#### ea.setJSONBody(url)
-#### ea.setFormBody(url)
 #### ea.setQueries(url)
+#### ea.setBody(body)
+#### ea.setJson(url)
+#### ea.setForm(url)
 #### ea.setOptions(options)
 
 #### ea.fetchResponse()
-#### ea.fetchJSON()
+#### ea.fetchJson()
 #### ea.fetchText()
-#### ea.fetchHTML()
+#### ea.fetchHtml()
 
 #### ea.use(plugin)
 
-### request.globalUse(plugin)
-### request.globalUnuse(plugin)
-### request.globalUnuseAll()
+### EasyAgent.use(plugin)
+### EasyAgent.unuse(plugin)
+### EasyAgent.unuseAll()
 
 ## License
 

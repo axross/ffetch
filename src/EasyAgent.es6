@@ -1,6 +1,10 @@
 import _ from './util';
 
-const __plugins = [];
+const globalPlugins = [];
+
+let fetch = window.fetch || function() {
+  throw new ReferenceError('fetch is not defined');
+};
 
 class EasyAgent {
   constructor(url, options = {}) {
@@ -9,7 +13,7 @@ class EasyAgent {
     this.queries = options.queries || {};
     this.headers = options.headers || {};
     this.body    = options.body    || null;
-    this.plugins = options.plugins || __plugins;
+    this.plugins = options.plugins || globalPlugins;
   }
 
   setUrl(newUrl) {
@@ -40,7 +44,7 @@ class EasyAgent {
     return this.setOptions({ body });
   }
 
-  setJSONBody(json) {
+  setJson(json) {
     const jsonStr = JSON.stringify(json);
 
     return this.setOptions({
@@ -51,13 +55,9 @@ class EasyAgent {
     });
   }
 
-  setFormBody(form) {
-    if (!(form instanceof Form)) {
-      form = new Form(form);
-    }
-
+  setForm(form) {
     return this.setOptions({
-      body: form,
+      body:    form,
       headers: _.assign(this.headers, {
         'Content-Type': 'application/x-www-form-urlencoded',
       }),
@@ -90,7 +90,7 @@ class EasyAgent {
     return f;
   }
 
-  fetchJSON() {
+  fetchJson() {
     return this
       .setHeaders({ 'Accept': 'application/json' })
       .fetchResponse()
@@ -104,24 +104,52 @@ class EasyAgent {
       .then((res) => { return res.text() });
   }
 
-  fetchHTML() {
+  fetchHtml() {
     return this.fetchText('text/html');
   }
 
-  static globalUse(plugin) {
-    __plugin.push(plugin);
+  static get(url, options) {
+    return new this(url, _.assign({ method: 'GET', body: null }, options));
   }
 
-  static globalUnuse(plugin) {
-    const index = __plugins.indexOf(plugin);
+  static post(url, options) {
+    return new this(url, _.assign({ method: 'POST', body: null }, options));
+  }
+
+  static put(url, options) {
+    return new this(url, _.assign({ method: 'PUT', body: null }, options));
+  }
+
+  static del(url, options) {
+    return new this(url, _.assign({ method: 'DELETE', body: null }, options));
+  }
+
+  static head(url, options) {
+    return new this(url, _.assign({ method: 'HEAD', body: null }, options));
+  }
+
+  static opt(url, options) {
+    return new this(url, _.assign({ method: 'OPTIONS', body: null }, options));
+  }
+
+  static setFetchFunction(anotherFetch) {
+    fetch = anotherFetch;
+  }
+
+  static use(plugin) {
+    globalPlugins.push(plugin);
+  }
+
+  static unuse(plugin) {
+    const index = globalPlugins.indexOf(plugin);
 
     if (index < 0) return false;
 
-    __plugins.splice(index, 1);
+    globalPlugins.splice(index, 1);
   }
 
-  static globalUnuseAll() {
-    __plugins.splice(0, __plugins.length);
+  static unuseAll() {
+    globalPlugins.splice(0, globalPlugins.length);
   }
 };
 

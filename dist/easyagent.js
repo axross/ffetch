@@ -14,7 +14,11 @@ var _util = require('./util');
 
 var _util2 = _interopRequireDefault(_util);
 
-var __plugins = [];
+var globalPlugins = [];
+
+var fetch = window.fetch || function () {
+  throw new ReferenceError('fetch is not defined');
+};
 
 var EasyAgent = (function () {
   function EasyAgent(url) {
@@ -27,7 +31,7 @@ var EasyAgent = (function () {
     this.queries = options.queries || {};
     this.headers = options.headers || {};
     this.body = options.body || null;
-    this.plugins = options.plugins || __plugins;
+    this.plugins = options.plugins || globalPlugins;
   }
 
   _createClass(EasyAgent, [{
@@ -64,8 +68,8 @@ var EasyAgent = (function () {
       return this.setOptions({ body: body });
     }
   }, {
-    key: 'setJSONBody',
-    value: function setJSONBody(json) {
+    key: 'setJson',
+    value: function setJson(json) {
       var jsonStr = JSON.stringify(json);
 
       return this.setOptions({
@@ -76,12 +80,8 @@ var EasyAgent = (function () {
       });
     }
   }, {
-    key: 'setFormBody',
-    value: function setFormBody(form) {
-      if (!(form instanceof Form)) {
-        form = new Form(form);
-      }
-
+    key: 'setForm',
+    value: function setForm(form) {
       return this.setOptions({
         body: form,
         headers: _util2['default'].assign(this.headers, {
@@ -119,8 +119,8 @@ var EasyAgent = (function () {
       return f;
     }
   }, {
-    key: 'fetchJSON',
-    value: function fetchJSON() {
+    key: 'fetchJson',
+    value: function fetchJson() {
       return this.setHeaders({ 'Accept': 'application/json' }).fetchResponse().then(function (res) {
         return res.json();
       });
@@ -135,28 +135,63 @@ var EasyAgent = (function () {
       });
     }
   }, {
-    key: 'fetchHTML',
-    value: function fetchHTML() {
+    key: 'fetchHtml',
+    value: function fetchHtml() {
       return this.fetchText('text/html');
     }
   }], [{
-    key: 'globalUse',
-    value: function globalUse(plugin) {
-      __plugin.push(plugin);
+    key: 'get',
+    value: function get(url, options) {
+      return new this(url, _util2['default'].assign({ method: 'GET', body: null }, options));
     }
   }, {
-    key: 'globalUnuse',
-    value: function globalUnuse(plugin) {
-      var index = __plugins.indexOf(plugin);
+    key: 'post',
+    value: function post(url, options) {
+      return new this(url, _util2['default'].assign({ method: 'POST', body: null }, options));
+    }
+  }, {
+    key: 'put',
+    value: function put(url, options) {
+      return new this(url, _util2['default'].assign({ method: 'PUT', body: null }, options));
+    }
+  }, {
+    key: 'del',
+    value: function del(url, options) {
+      return new this(url, _util2['default'].assign({ method: 'DELETE', body: null }, options));
+    }
+  }, {
+    key: 'head',
+    value: function head(url, options) {
+      return new this(url, _util2['default'].assign({ method: 'HEAD', body: null }, options));
+    }
+  }, {
+    key: 'opt',
+    value: function opt(url, options) {
+      return new this(url, _util2['default'].assign({ method: 'OPTIONS', body: null }, options));
+    }
+  }, {
+    key: 'setFetchFunction',
+    value: function setFetchFunction(anotherFetch) {
+      fetch = anotherFetch;
+    }
+  }, {
+    key: 'use',
+    value: function use(plugin) {
+      globalPlugins.push(plugin);
+    }
+  }, {
+    key: 'unuse',
+    value: function unuse(plugin) {
+      var index = globalPlugins.indexOf(plugin);
 
       if (index < 0) return false;
 
-      __plugins.splice(index, 1);
+      globalPlugins.splice(index, 1);
     }
   }, {
-    key: 'globalUnuseAll',
-    value: function globalUnuseAll() {
-      __plugins.splice(0, __plugins.length);
+    key: 'unuseAll',
+    value: function unuseAll() {
+      globalPlugins.splice(0, globalPlugins.length);
     }
   }]);
 
