@@ -1,6 +1,6 @@
 # [WIP] EasyAgent
 
-EasyAgent is nothing more than a wrapper library of [fetch API](https://fetch.spec.whatwg.org/) but EasyAgent certainly helps your using fetch API. Anyhow, view a [examples](#examples) and [docs](#installation).
+EasyAgent is nothing more than a wrapper library of [fetch API](https://fetch.spec.whatwg.org/), but EasyAgent certainly helps your using fetch API. Anyhow, view [examples](#examples) and [docs](#installation).
 
 ## Features
 
@@ -29,7 +29,7 @@ request.get('https://api.github.com/search/repositories')
 ## Installation
 
 ```
-npm i -S easyagent
+$ npm i -S easyagent
 ```
 
 ```javascript
@@ -52,25 +52,25 @@ import request from 'easyagent';
 returns instance of EasyAgent.
 
 ```javascript
-const easyagent = request.get('https://api.github.com/search/repositories');
+const ea = request.get('https://api.github.com/search/repositories');
 // => instance of EasyAgent
 ```
 
-#### easyagent.setUrl(url)
-#### easyagent.setMethod(method)
-#### easyagent.setHeaders(url)
-#### easyagent.setBody(body)
-#### easyagent.setJSONBody(url)
-#### easyagent.setFormBody(url)
-#### easyagent.setQueries(url)
-#### easyagent.setOptions(options)
+#### ea.setUrl(url)
+#### ea.setMethod(method)
+#### ea.setHeaders(url)
+#### ea.setBody(body)
+#### ea.setJSONBody(url)
+#### ea.setFormBody(url)
+#### ea.setQueries(url)
+#### ea.setOptions(options)
 
-#### easyagent.getResponse()
-#### easyagent.getJSON()
-#### easyagent.getText()
-#### easyagent.getHTML()
+#### ea.fetchResponse()
+#### ea.fetchJSON()
+#### ea.fetchText()
+#### ea.fetchHTML()
 
-#### easyagent.use(plugin)
+#### ea.use(plugin)
 
 ### request.globalUse(plugin)
 ### request.globalUnuse(plugin)

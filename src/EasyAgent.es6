@@ -72,7 +72,7 @@ class EasyAgent {
     return this.setOptions({ plugins: this.plugins.concat([plugin]) });
   }
 
-  getResponse() {
+  fetchResponse() {
     const queryString = _.queryString(this.queries);
 
     let f = fetch(this.url + queryString, {
@@ -90,22 +90,22 @@ class EasyAgent {
     return f;
   }
 
-  getJSON() {
+  fetchJSON() {
     return this
       .setHeaders({ 'Accept': 'application/json' })
-      .getResponse()
+      .fetchResponse()
       .then((res) => { return res.json() });
   }
 
-  getText(mimeType = 'text/plain') {
+  fetchText(mimeType = 'text/plain') {
     return this
       .setHeaders({ 'Accept': mimeType })
-      .getResponse()
+      .fetchResponse()
       .then((res) => { return res.text() });
   }
 
-  getHTML() {
-    return this.getText('text/html');
+  fetchHTML() {
+    return this.fetchText('text/html');
   }
 
   static globalUse(plugin) {

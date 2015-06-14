@@ -101,8 +101,8 @@ var EasyAgent = (function () {
       return this.setOptions({ plugins: this.plugins.concat([plugin]) });
     }
   }, {
-    key: 'getResponse',
-    value: function getResponse() {
+    key: 'fetchResponse',
+    value: function fetchResponse() {
       var queryString = _util2['default'].queryString(this.queries);
 
       var f = fetch(this.url + queryString, {
@@ -120,25 +120,25 @@ var EasyAgent = (function () {
       return f;
     }
   }, {
-    key: 'getJSON',
-    value: function getJSON() {
-      return this.setHeaders({ 'Accept': 'application/json' }).getResponse().then(function (res) {
+    key: 'fetchJSON',
+    value: function fetchJSON() {
+      return this.setHeaders({ 'Accept': 'application/json' }).fetchResponse().then(function (res) {
         return res.json();
       });
     }
   }, {
-    key: 'getText',
-    value: function getText() {
+    key: 'fetchText',
+    value: function fetchText() {
       var mimeType = arguments[0] === undefined ? 'text/plain' : arguments[0];
 
-      return this.setHeaders({ 'Accept': mimeType }).getResponse().then(function (res) {
+      return this.setHeaders({ 'Accept': mimeType }).fetchResponse().then(function (res) {
         return res.text();
       });
     }
   }, {
-    key: 'getHTML',
-    value: function getHTML() {
-      return this.getText('text/html');
+    key: 'fetchHTML',
+    value: function fetchHTML() {
+      return this.fetchText('text/html');
     }
   }], [{
     key: 'globalUse',
