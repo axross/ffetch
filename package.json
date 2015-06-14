@@ -1,10 +1,10 @@
 {
   "name": "easyagent",
   "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Simple wrapper library of fetch API.",
+  "main": "./dist/index.js",
   "scripts": {
-    "build": "browserify ./src/index.es6 -t babelify --extension .es6 -o ./dist/easyagent.js",
+    "build": "babel ./src --ignore __tests__/* --out-dir ./dist",
     "test": "mocha -u bdd -R spec --compilers es6:babel/register ./src/**/__tests__/**/*.spec.es6"
   },
   "repository": {
