@@ -75,3 +75,7 @@ const easyagent = request.get('https://api.github.com/search/repositories');
 ### request.globalUse(plugin)
 ### request.globalUnuse(plugin)
 ### request.globalUnuseAll()
+
+## License
+
+MIT
