@@ -26,6 +26,8 @@ class EasyAgent {
   }
 
   setMethod(method) {
+    method = method.toUpperCase();
+
     return this.__setOptions({ method });
   }
 

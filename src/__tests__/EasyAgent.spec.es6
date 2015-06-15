@@ -112,5 +112,15 @@ describe('EasyAgent', () => {
       expect(ea.method).to.be('GET');
       expect(another.method).to.be('POST');
     });
+
+    it('should convert method to upper case', () => {
+      expect(
+        EasyAgent.get('http://first.url')
+          .setMethod('delete')
+          .method
+      ).to.be('DELETE');
+    });
   });
+
+  describe
 });
