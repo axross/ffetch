@@ -112,14 +112,51 @@ describe('EasyAgent', () => {
       expect(ea.method).to.be('GET');
       expect(another.method).to.be('POST');
     });
+  });
 
-    it('should convert method to upper case', () => {
+  describe('EasyAgent#setHeaders()', () => {
+    it('should return an instance that headers is appended', () => {
       expect(
         EasyAgent.get('http://first.url')
-          .setMethod('delete')
-          .method
-      ).to.be('DELETE');
+          .setHeaders({ 'Content-Type': 'application/json' })
+          .headers
+      ).to.eql({ 'Content-Type': 'application/json' });
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setHeaders({ 'Content-Type': 'application/json' })
+          .setHeaders({ 'Accept': 'application/json' })
+          .headers
+      ).to.eql({
+        'Content-Type': 'application/json',
+        'Accept':       'application/json',
+      });
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setHeaders({
+            'Content-Type': 'application/json',
+            'Accept':       'application/json',
+          })
+          .setHeaders({ 'X-Custom-Header': 'with EasyAgent' })
+          .headers
+      ).to.eql({
+        'Content-Type':    'application/json',
+        'Accept':          'application/json',
+        'X-Custom-Header': 'with EasyAgent',
+      });
     });
+
+    it('should return an instance that is another reference', () => {
+      const ea      = EasyAgent.get('http://first.url');
+      const another = ea.setHeaders({ 'Content-Type': 'application/json' });
+
+      expect(ea).to.not.be(another);
+      expect(ea.headers).to.eql({});
+      expect(another.headers).to.eql({ 'Content-Type': 'application/json' });
+    });
+
+
   });
 
   describe
