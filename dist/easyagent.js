@@ -38,49 +38,41 @@ var EasyAgent = (function () {
   _createClass(EasyAgent, [{
     key: 'setUrl',
     value: function setUrl(newUrl) {
-      return new this.constructor(newUrl, this.options);
+      return new EasyAgent(newUrl, this.options);
     }
   }, {
-    key: 'setOptions',
-    value: function setOptions(newOptions) {
-      var options = _util2['default'].assign(Object(this), newOptions);
-      var method = options.method.toUpperCase();
-      var body = options.body;
-
-      if (body !== null && (method === 'GET' || method === 'HEAD')) {
-        throw new TypeError('Body not allowed for GET or HEAD requests');
-      }
-
-      return new this.constructor(this.url, options);
+    key: '__setOptions',
+    value: function __setOptions(options) {
+      return new EasyAgent(this.url, _util2['default'].assign({}, Object(this), options));
     }
   }, {
     key: 'setMethod',
     value: function setMethod(method) {
-      return this.setOptions({ method: method });
+      return this.__setOptions({ method: method });
     }
   }, {
     key: 'setHeaders',
     value: function setHeaders(headers) {
-      return this.setOptions({ headers: _util2['default'].assign(this.headers, headers) });
+      return this.__setOptions({ headers: _util2['default'].assign({}, this.headers, headers) });
     }
   }, {
     key: 'setQueries',
     value: function setQueries(queries) {
-      return this.setOptions({ queries: _util2['default'].assign(this.queries, queries) });
+      return this.__setOptions({ queries: _util2['default'].assign({}, this.queries, queries) });
     }
   }, {
     key: 'setBody',
     value: function setBody(body) {
-      return this.setOptions({ body: body });
+      return this.__setOptions({ body: body });
     }
   }, {
     key: 'setJson',
     value: function setJson(json) {
       var jsonStr = JSON.stringify(json);
 
-      return this.setOptions({
+      return this.__setOptions({
         body: jsonStr,
-        headers: _util2['default'].assign(this.headers, {
+        headers: _util2['default'].assign({}, this.headers, {
           'Content-Type': 'application/json'
         })
       });
@@ -88,9 +80,9 @@ var EasyAgent = (function () {
   }, {
     key: 'setForm',
     value: function setForm(form) {
-      return this.setOptions({
+      return this.__setOptions({
         body: form,
-        headers: _util2['default'].assign(this.headers, {
+        headers: _util2['default'].assign({}, this.headers, {
           'Content-Type': 'application/x-www-form-urlencoded'
         })
       });
@@ -132,32 +124,32 @@ var EasyAgent = (function () {
   }], [{
     key: 'get',
     value: function get(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'GET', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'GET', body: null }, options));
     }
   }, {
     key: 'post',
     value: function post(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'POST', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'POST', body: null }, options));
     }
   }, {
     key: 'put',
     value: function put(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'PUT', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'PUT', body: null }, options));
     }
   }, {
     key: 'del',
     value: function del(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'DELETE', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'DELETE', body: null }, options));
     }
   }, {
     key: 'head',
     value: function head(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'HEAD', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'HEAD', body: null }, options));
     }
   }, {
     key: 'opt',
     value: function opt(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'OPTIONS', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'OPTIONS', body: null }, options));
     }
   }, {
     key: 'setFetchFunction',

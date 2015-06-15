@@ -18,52 +18,44 @@ class EasyAgent {
   }
 
   setUrl(newUrl) {
-    return new this.constructor(newUrl, this.options);
+    return new EasyAgent(newUrl, this.options);
   }
 
-  setOptions(newOptions) {
-    const options = _.assign(Object(this), newOptions);
-    const method  = options.method.toUpperCase();
-    const body    = options.body;
-
-    if (body !== null && (method === 'GET' || method === 'HEAD')) {
-      throw new TypeError('Body not allowed for GET or HEAD requests');
-    }
-
-    return new this.constructor(this.url, options);
+  __setOptions(options) {
+    return new EasyAgent(this.url, _.assign({}, Object(this), options));
   }
 
   setMethod(method) {
-    return this.setOptions({ method });
+    return this.__setOptions({ method });
   }
 
   setHeaders(headers) {
-    return this.setOptions({ headers: _.assign(this.headers, headers) });
+    return this.__setOptions({ headers: _.assign({}, this.headers, headers) });
   }
 
   setQueries(queries) {
-    return this.setOptions({ queries: _.assign(this.queries, queries) });
+    return this.__setOptions({ queries: _.assign({}, this.queries, queries) });
   }
 
   setBody(body) {
-    return this.setOptions({ body });
+    return this.__setOptions({ body });
   }
 
   setJson(json) {
     const jsonStr = JSON.stringify(json);
 
-    return this.setOptions({
+    return this.__setOptions({
       body:    jsonStr,
-      headers: _.assign(this.headers, {
+      headers: _.assign({}, this.headers, {
         'Content-Type': 'application/json',
       }),
     });
   }
 
   setForm(form) {
-    return this.setOptions({
+    return this.__setOptions({
       body:    form,
-      headers: _.assign(this.headers, {
+      headers: _.assign({}, this.headers, {
         'Content-Type': 'application/x-www-form-urlencoded',
       }),
     });
@@ -100,27 +92,27 @@ class EasyAgent {
   }
 
   static get(url, options) {
-    return new this(url, _.assign({ method: 'GET', body: null }, options));
+    return new EasyAgent(url, _.assign({ method: 'GET', body: null }, options));
   }
 
   static post(url, options) {
-    return new this(url, _.assign({ method: 'POST', body: null }, options));
+    return new EasyAgent(url, _.assign({ method: 'POST', body: null }, options));
   }
 
   static put(url, options) {
-    return new this(url, _.assign({ method: 'PUT', body: null }, options));
+    return new EasyAgent(url, _.assign({ method: 'PUT', body: null }, options));
   }
 
   static del(url, options) {
-    return new this(url, _.assign({ method: 'DELETE', body: null }, options));
+    return new EasyAgent(url, _.assign({ method: 'DELETE', body: null }, options));
   }
 
   static head(url, options) {
-    return new this(url, _.assign({ method: 'HEAD', body: null }, options));
+    return new EasyAgent(url, _.assign({ method: 'HEAD', body: null }, options));
   }
 
   static opt(url, options) {
-    return new this(url, _.assign({ method: 'OPTIONS', body: null }, options));
+    return new EasyAgent(url, _.assign({ method: 'OPTIONS', body: null }, options));
   }
 
   static setFetchFunction(anotherFetch) {
