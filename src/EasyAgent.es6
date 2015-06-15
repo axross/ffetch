@@ -41,6 +41,10 @@ class EasyAgent {
     return this.setOptions({ headers: _.assign(this.headers, headers) });
   }
 
+  setQueries(queries) {
+    return this.setOptions({ queries: _.assign(this.queries, queries) });
+  }
+
   setBody(body) {
     return this.setOptions({ body });
   }
@@ -63,10 +67,6 @@ class EasyAgent {
         'Content-Type': 'application/x-www-form-urlencoded',
       }),
     });
-  }
-
-  setQueries(queries) {
-    return this.setOptions({ queries: _.assign(this.queries, queries) });
   }
 
   fetch() {

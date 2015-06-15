@@ -14,14 +14,12 @@ var _util = require('./util');
 
 var _util2 = _interopRequireDefault(_util);
 
-var globalPlugins = [];
-
-var fetch = function fetch() {
+var _fetch = function fetch() {
   throw new ReferenceError('fetch is not defined');
 };
 
 if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
-  fetch = window.fetch;
+  _fetch = window.fetch;
 }
 
 var EasyAgent = (function () {
@@ -35,7 +33,6 @@ var EasyAgent = (function () {
     this.queries = options.queries || {};
     this.headers = options.headers || {};
     this.body = options.body || null;
-    this.plugins = options.plugins || globalPlugins;
   }
 
   _createClass(EasyAgent, [{
@@ -67,6 +64,11 @@ var EasyAgent = (function () {
       return this.setOptions({ headers: _util2['default'].assign(this.headers, headers) });
     }
   }, {
+    key: 'setQueries',
+    value: function setQueries(queries) {
+      return this.setOptions({ queries: _util2['default'].assign(this.queries, queries) });
+    }
+  }, {
     key: 'setBody',
     value: function setBody(body) {
       return this.setOptions({ body: body });
@@ -94,31 +96,15 @@ var EasyAgent = (function () {
       });
     }
   }, {
-    key: 'setQueries',
-    value: function setQueries(queries) {
-      return this.setOptions({ queries: _util2['default'].assign(this.queries, queries) });
-    }
-  }, {
-    key: 'use',
-    value: function use(plugin) {
-      return this.setOptions({ plugins: this.plugins.concat([plugin]) });
-    }
-  }, {
-    key: 'fetchResponse',
-    value: function fetchResponse() {
+    key: 'fetch',
+    value: function fetch() {
       var queryString = _util2['default'].queryString(this.queries);
 
-      var f = fetch(this.url + queryString, {
+      var f = _fetch(this.url + queryString, {
         method: this.method,
         headers: this.hearders,
         body: this.body
       });
-
-      if (this.plugins.length > 0) {
-        f = this.plugins.reduce(function (__f, plugin) {
-          return plugin(__f).call(__f);
-        }, f);
-      }
 
       return f;
     }
@@ -176,26 +162,7 @@ var EasyAgent = (function () {
   }, {
     key: 'setFetchFunction',
     value: function setFetchFunction(anotherFetch) {
-      fetch = anotherFetch;
-    }
-  }, {
-    key: 'use',
-    value: function use(plugin) {
-      globalPlugins.push(plugin);
-    }
-  }, {
-    key: 'unuse',
-    value: function unuse(plugin) {
-      var index = globalPlugins.indexOf(plugin);
-
-      if (index < 0) return false;
-
-      globalPlugins.splice(index, 1);
-    }
-  }, {
-    key: 'unuseAll',
-    value: function unuseAll() {
-      globalPlugins.splice(0, globalPlugins.length);
+      _fetch = anotherFetch;
     }
   }]);
 
@@ -203,6 +170,9 @@ var EasyAgent = (function () {
 })();
 
 ;
+
+// TODO:
+// EasyAgent.addCustomFetcher()
 
 exports['default'] = EasyAgent;
 module.exports = exports['default'];
