@@ -2,9 +2,13 @@ import _ from './util';
 
 const globalPlugins = [];
 
-let fetch = window.fetch || function() {
+let fetch = () => {
   throw new ReferenceError('fetch is not defined');
 };
+
+if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
+  fetch = window.fetch;
+}
 
 class EasyAgent {
   constructor(url, options = {}) {
@@ -21,15 +25,15 @@ class EasyAgent {
   }
 
   setOptions(newOptions) {
-    const options     = _.assign(this, newOptions);
-    const Uppermethod = options.method.toUpperCase();
-    const body        = options.body;
+    const options = _.assign(Object(this), newOptions);
+    const method  = options.method.toUpperCase();
+    const body    = options.body;
 
-    if (body !== null && (upperMethod === 'GET' || upperMethod === 'HEAD')) {
+    if (body !== null && (method === 'GET' || method === 'HEAD')) {
       throw new TypeError('Body not allowed for GET or HEAD requests');
     }
 
-    return new this.constructor(this.url, newOptions);
+    return new this.constructor(this.url, options);
   }
 
   setMethod(method) {
@@ -37,7 +41,7 @@ class EasyAgent {
   }
 
   setHeaders(headers) {
-    return this.setOptions({ headers });
+    return this.setOptions({ headers: _.assign(this.headers, headers) });
   }
 
   setBody(body) {
@@ -65,7 +69,7 @@ class EasyAgent {
   }
 
   setQueries(queries) {
-    return this.setOptions({ queries });
+    return this.setOptions({ queries: _.assign(this.queries, queries) });
   }
 
   use(plugin) {

@@ -1,3 +1,4 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -206,3 +207,129 @@ var EasyAgent = (function () {
 
 exports['default'] = EasyAgent;
 module.exports = exports['default'];
+},{"./util":2}],2:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _objectAssign = require('object-assign');
+
+var _objectAssign2 = _interopRequireDefault(_objectAssign);
+
+var queryString = function queryString(obj) {
+  var keys = Object.keys(obj);
+
+  if (keys.length === 0) return '';
+
+  var pairs = keys.map(function (key) {
+    return '' + encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
+  });
+
+  return '?' + pairs.join('&');
+};
+
+exports['default'] = {
+  assign: _objectAssign2['default'],
+  queryString: queryString
+};
+module.exports = exports['default'];
+},{"object-assign":4}],3:[function(require,module,exports){
+var EasyAgent = require('../dist/EasyAgent');
+
+document.addEventListener('DOMContentLoaded', function() {
+  var formEl   = document.querySelector('.form');
+  var inputEl  = document.querySelector('.input');
+  var resultEl = document.querySelector('.result');
+
+  var outputResult = function(repos) {
+    var fragment = document.createDocumentFragment();
+
+    var template = document.createElement('li');
+    template.appendChild(document.createElement('a'));
+    template.appendChild(document.createElement('span'));
+
+    while (resultEl.children.length > 0) {
+      resultEl.removeChild(resultEl.firstChild);
+    }
+
+    repos.forEach(function(repo) {
+      var node   = template.cloneNode(true);
+      var aEl    = node.querySelector('a');
+      var spanEl = node.querySelector('span');
+
+      console.log(node);
+
+      aEl.textContent = repo.full_name;
+      aEl.setAttribute('href', repo.url);
+
+      spanEl.textContent = '(' + repo.stargazers_count + ')'
+
+      fragment.appendChild(node);
+    });
+
+    resultEl.appendChild(fragment);
+  };
+
+  formEl.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var query = inputEl.value.trim();
+
+    EasyAgent.get('https://api.github.com/search/repositories')
+      .setQueries({ q: query })
+      .fetchJson()
+      .then(function(json) {
+        outputResult(json.items);
+      })
+      .catch(function(err) {
+        console.error(err);
+      });
+  });
+});
+
+},{"../dist/EasyAgent":1}],4:[function(require,module,exports){
+'use strict';
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function ToObject(val) {
+	if (val == null) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+function ownEnumerableKeys(obj) {
+	var keys = Object.getOwnPropertyNames(obj);
+
+	if (Object.getOwnPropertySymbols) {
+		keys = keys.concat(Object.getOwnPropertySymbols(obj));
+	}
+
+	return keys.filter(function (key) {
+		return propIsEnumerable.call(obj, key);
+	});
+}
+
+module.exports = Object.assign || function (target, source) {
+	var from;
+	var keys;
+	var to = ToObject(target);
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = arguments[s];
+		keys = ownEnumerableKeys(Object(from));
+
+		for (var i = 0; i < keys.length; i++) {
+			to[keys[i]] = from[keys[i]];
+		}
+	}
+
+	return to;
+};
+
+},{}]},{},[3]);
