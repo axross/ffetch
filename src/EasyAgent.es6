@@ -1,7 +1,5 @@
 import _ from './util';
 
-const globalPlugins = [];
-
 let fetch = () => {
   throw new ReferenceError('fetch is not defined');
 };
@@ -17,7 +15,6 @@ class EasyAgent {
     this.queries = options.queries || {};
     this.headers = options.headers || {};
     this.body    = options.body    || null;
-    this.plugins = options.plugins || globalPlugins;
   }
 
   setUrl(newUrl) {
@@ -72,10 +69,6 @@ class EasyAgent {
     return this.setOptions({ queries: _.assign(this.queries, queries) });
   }
 
-  use(plugin) {
-    return this.setOptions({ plugins: this.plugins.concat([plugin]) });
-  }
-
   fetchResponse() {
     const queryString = _.queryString(this.queries);
 
@@ -84,12 +77,6 @@ class EasyAgent {
       headers: this.hearders,
       body:    this.body,
     });
-
-    if (this.plugins.length > 0) {
-      f = this.plugins.reduce((__f, plugin) => {
-        return plugin(__f).call(__f);
-      }, f);
-    }
 
     return f;
   }
@@ -138,22 +125,6 @@ class EasyAgent {
 
   static setFetchFunction(anotherFetch) {
     fetch = anotherFetch;
-  }
-
-  static use(plugin) {
-    globalPlugins.push(plugin);
-  }
-
-  static unuse(plugin) {
-    const index = globalPlugins.indexOf(plugin);
-
-    if (index < 0) return false;
-
-    globalPlugins.splice(index, 1);
-  }
-
-  static unuseAll() {
-    globalPlugins.splice(0, globalPlugins.length);
   }
 };
 

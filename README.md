@@ -58,24 +58,18 @@ const ea = EasyAgent.get('https://api.github.com/search/repositories');
 // => instance of EasyAgent
 ```
 
-#### ea.setUrl(url)
-#### ea.setMethod(method)
-#### ea.setHeaders(url)
-#### ea.setQueries(url)
-#### ea.setBody(body)
-#### ea.setJson(url)
-#### ea.setForm(url)
+#### EasyAgent#setUrl(url)
+#### EasyAgent#setMethod(method)
+#### EasyAgent#setHeaders(url)
+#### EasyAgent#setQueries(url)
+#### EasyAgent#setBody(body)
+#### EasyAgent#setJson(url)
+#### EasyAgent#setForm(url)
 
-#### ea.fetchResponse()
-#### ea.fetchJson()
-#### ea.fetchText()
-#### ea.fetchHtml()
-
-#### ea.use(plugin)
-
-### EasyAgent.use(plugin)
-### EasyAgent.unuse(plugin)
-### EasyAgent.unuseAll()
+#### EasyAgent#fetchResponse()
+#### EasyAgent#fetchJson()
+#### EasyAgent#fetchText()
+#### EasyAgent#fetchHtml()
 
 ## License
 
