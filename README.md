@@ -66,7 +66,7 @@ const ea = EasyAgent.get('https://api.github.com/search/repositories');
 #### EasyAgent#setJson(url)
 #### EasyAgent#setForm(url)
 
-#### EasyAgent#fetchResponse()
+#### EasyAgent#fetch()
 #### EasyAgent#fetchJson()
 #### EasyAgent#fetchText()
 #### EasyAgent#fetchHtml()

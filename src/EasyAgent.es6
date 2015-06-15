@@ -69,7 +69,7 @@ class EasyAgent {
     return this.setOptions({ queries: _.assign(this.queries, queries) });
   }
 
-  fetchResponse() {
+  fetch() {
     const queryString = _.queryString(this.queries);
 
     let f = fetch(this.url + queryString, {
@@ -127,5 +127,8 @@ class EasyAgent {
     fetch = anotherFetch;
   }
 };
+
+// TODO:
+// EasyAgent.addCustomFetcher()
 
 export default EasyAgent;
