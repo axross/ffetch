@@ -10,9 +10,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var _util = require('./util');
+var _objectAssign = require('object-assign');
 
-var _util2 = _interopRequireDefault(_util);
+var _objectAssign2 = _interopRequireDefault(_objectAssign);
+
+var _querify = require('./querify');
+
+var _querify2 = _interopRequireDefault(_querify);
 
 var _fetch = function fetch() {
   throw new ReferenceError('fetch is not defined');
@@ -38,7 +42,7 @@ var EasyAgent = (function () {
   _createClass(EasyAgent, [{
     key: '__setOptions',
     value: function __setOptions(options) {
-      return new EasyAgent(this.url, _util2['default'].assign({}, Object(this), options));
+      return new EasyAgent(this.url, (0, _objectAssign2['default'])({}, Object(this), options));
     }
   }, {
     key: 'setUrl',
@@ -53,12 +57,12 @@ var EasyAgent = (function () {
   }, {
     key: 'setHeaders',
     value: function setHeaders(headers) {
-      return this.__setOptions({ headers: _util2['default'].assign({}, this.headers, headers) });
+      return this.__setOptions({ headers: (0, _objectAssign2['default'])({}, this.headers, headers) });
     }
   }, {
     key: 'setQueries',
     value: function setQueries(queries) {
-      return this.__setOptions({ queries: _util2['default'].assign({}, this.queries, queries) });
+      return this.__setOptions({ queries: (0, _objectAssign2['default'])({}, this.queries, queries) });
     }
   }, {
     key: 'setBody',
@@ -70,7 +74,7 @@ var EasyAgent = (function () {
     value: function setJson(json) {
       return this.__setOptions({
         body: JSON.stringify(json),
-        headers: _util2['default'].assign({}, this.headers, {
+        headers: (0, _objectAssign2['default'])({}, this.headers, {
           'Content-Type': 'application/json'
         })
       });
@@ -80,7 +84,7 @@ var EasyAgent = (function () {
     value: function setForm(form) {
       return this.__setOptions({
         body: form,
-        headers: _util2['default'].assign({}, this.headers, {
+        headers: (0, _objectAssign2['default'])({}, this.headers, {
           'Content-Type': 'application/x-www-form-urlencoded'
         })
       });
@@ -88,11 +92,11 @@ var EasyAgent = (function () {
   }, {
     key: 'fetch',
     value: function fetch() {
-      var queryString = _util2['default'].queryString(this.queries);
+      var querified = (0, _querify2['default'])(this.queries);
 
-      var f = _fetch(this.url + queryString, {
+      var f = _fetch(this.url + querified, {
         method: this.method,
-        headers: this.hearders,
+        headers: this.headers,
         body: this.body
       });
 
@@ -122,32 +126,32 @@ var EasyAgent = (function () {
   }], [{
     key: 'get',
     value: function get(url, options) {
-      return new EasyAgent(url, _util2['default'].assign({ method: 'GET', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'GET', body: null }, options));
     }
   }, {
     key: 'post',
     value: function post(url, options) {
-      return new EasyAgent(url, _util2['default'].assign({ method: 'POST', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'POST', body: null }, options));
     }
   }, {
     key: 'put',
     value: function put(url, options) {
-      return new EasyAgent(url, _util2['default'].assign({ method: 'PUT', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'PUT', body: null }, options));
     }
   }, {
     key: 'del',
     value: function del(url, options) {
-      return new EasyAgent(url, _util2['default'].assign({ method: 'DELETE', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'DELETE', body: null }, options));
     }
   }, {
     key: 'head',
     value: function head(url, options) {
-      return new EasyAgent(url, _util2['default'].assign({ method: 'HEAD', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'HEAD', body: null }, options));
     }
   }, {
     key: 'opt',
     value: function opt(url, options) {
-      return new EasyAgent(url, _util2['default'].assign({ method: 'OPTIONS', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'OPTIONS', body: null }, options));
     }
   }, {
     key: 'setFetchFunction',

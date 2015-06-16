@@ -1,4 +1,5 @@
-import _ from './util';
+import assign  from 'object-assign';
+import querify from './querify';
 
 let fetch = () => {
   throw new ReferenceError('fetch is not defined');
@@ -18,7 +19,7 @@ class EasyAgent {
   }
 
   __setOptions(options) {
-    return new EasyAgent(this.url, _.assign({}, Object(this), options));
+    return new EasyAgent(this.url, assign({}, Object(this), options));
   }
 
   setUrl(newUrl) {
@@ -30,11 +31,11 @@ class EasyAgent {
   }
 
   setHeaders(headers) {
-    return this.__setOptions({ headers: _.assign({}, this.headers, headers) });
+    return this.__setOptions({ headers: assign({}, this.headers, headers) });
   }
 
   setQueries(queries) {
-    return this.__setOptions({ queries: _.assign({}, this.queries, queries) });
+    return this.__setOptions({ queries: assign({}, this.queries, queries) });
   }
 
   setBody(body) {
@@ -44,7 +45,7 @@ class EasyAgent {
   setJson(json) {
     return this.__setOptions({
       body:    JSON.stringify(json),
-      headers: _.assign({}, this.headers, {
+      headers: assign({}, this.headers, {
         'Content-Type': 'application/json',
       }),
     });
@@ -53,18 +54,18 @@ class EasyAgent {
   setForm(form) {
     return this.__setOptions({
       body:    form,
-      headers: _.assign({}, this.headers, {
+      headers: assign({}, this.headers, {
         'Content-Type': 'application/x-www-form-urlencoded',
       }),
     });
   }
 
   fetch() {
-    const queryString = _.queryString(this.queries);
+    const querified = querify(this.queries);
 
-    let f = fetch(this.url + queryString, {
+    let f = fetch(this.url + querified, {
       method:  this.method,
-      headers: this.hearders,
+      headers: this.headers,
       body:    this.body,
     });
 
@@ -90,27 +91,27 @@ class EasyAgent {
   }
 
   static get(url, options) {
-    return new EasyAgent(url, _.assign({ method: 'GET', body: null }, options));
+    return new EasyAgent(url, assign({ method: 'GET', body: null }, options));
   }
 
   static post(url, options) {
-    return new EasyAgent(url, _.assign({ method: 'POST', body: null }, options));
+    return new EasyAgent(url, assign({ method: 'POST', body: null }, options));
   }
 
   static put(url, options) {
-    return new EasyAgent(url, _.assign({ method: 'PUT', body: null }, options));
+    return new EasyAgent(url, assign({ method: 'PUT', body: null }, options));
   }
 
   static del(url, options) {
-    return new EasyAgent(url, _.assign({ method: 'DELETE', body: null }, options));
+    return new EasyAgent(url, assign({ method: 'DELETE', body: null }, options));
   }
 
   static head(url, options) {
-    return new EasyAgent(url, _.assign({ method: 'HEAD', body: null }, options));
+    return new EasyAgent(url, assign({ method: 'HEAD', body: null }, options));
   }
 
   static opt(url, options) {
-    return new EasyAgent(url, _.assign({ method: 'OPTIONS', body: null }, options));
+    return new EasyAgent(url, assign({ method: 'OPTIONS', body: null }, options));
   }
 
   static setFetchFunction(anotherFetch) {

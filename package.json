@@ -4,7 +4,7 @@
   "description": "Simple wrapper library of fetch API.",
   "main": "./dist/EasyAgent.js",
   "scripts": {
-    "build": "babel ./src --ignore __tests__/* --out-dir ./dist",
+    "build": "npm run test && babel ./src --ignore __tests__/* --out-dir ./dist",
     "test": "mocha -u bdd -R spec --compilers es6:babel/register ./src/**/__tests__/**/*.spec.es6"
   },
   "repository": {
@@ -27,8 +27,10 @@
   "homepage": "https://github.com/axross/easyagent#readme",
   "devDependencies": {
     "babel": "^5.5.8",
+    "bluebird": "^2.9.30",
     "expect.js": "^0.3.1",
-    "mocha": "^2.2.5"
+    "mocha": "^2.2.5",
+    "sinon": "^1.15.3"
   },
   "dependencies": {
     "object-assign": "^3.0.0"

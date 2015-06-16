@@ -1,4 +1,6 @@
-import expect from 'expect.js';
+import expect  from 'expect.js';
+import Promise from 'bluebird';
+import sinon   from 'sinon';
 
 import EasyAgent from '../EasyAgent';
 
@@ -332,6 +334,73 @@ describe('EasyAgent', () => {
       expect(ea).to.not.be(another);
       expect(ea.body).to.eql(null);
       expect(another.body).to.eql({ q: 'easyagent' });
+    });
+  });
+
+  describe('EasyAgent#fetch()', () => {
+    const fetchStub = () => Promise.resolve(true);
+
+    afterEach(() => {
+      EasyAgent.setFetchFunction(() => {
+        throw new ReferenceError('fetch is not defined');
+      });
+    });
+
+    it('should call fetch function with arguments', () => {
+      const spy = sinon.spy(fetchStub);
+
+      EasyAgent.setFetchFunction(spy);
+      EasyAgent.get('http://first.url', {
+        method: 'GET',
+        queries: { q: 'easyagent', page: 5 },
+        headers: { 'Accept': 'application/json' },
+      })
+        .fetch();
+
+      const spyCall = spy.firstCall;
+
+      expect(spy.calledOnce).to.be(true);
+      expect(spyCall.args[0]).to.be('http://first.url?q=easyagent&page=5');
+      expect(spyCall.args[1]).to.eql({
+        method:  'GET',
+        headers: { 'Accept': 'application/json' },
+        body:    null,
+      });
+    });
+
+    it('should call fetch function with arguments #2', () => {
+      const spy = sinon.spy(fetchStub);
+
+      EasyAgent.setFetchFunction(spy);
+      EasyAgent.get('http://second.url/3', {
+        method: 'PUT',
+        queries: {
+          force:   true,
+          users:   ['axross', 'axr', 'oss'],
+          profile: { name: 'Kohei Asai', role: 'Software Engineer' },
+        },
+        headers: { 'Accept': 'application/json' },
+      })
+        .setJson({
+          name:    'easyagent',
+          repoUrl: 'https://github.com/axross/easyagent'
+        })
+        .fetch();
+
+      const spyCall = spy.firstCall;
+
+      expect(spy.calledOnce).to.be(true);
+      expect(spyCall.args[0]).to.be(
+        'http://second.url/3?force=true&users[]=axross&users[]=axr&users[]=oss&profile[name]=Kohei%20Asai&profile[role]=Software%20Engineer'
+      );
+      expect(spyCall.args[1]).to.eql({
+        method: 'PUT',
+        headers: {
+          'Accept':       'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: '{"name":"easyagent","repoUrl":"https://github.com/axross/easyagent"}',
+      });
     });
   });
 });
