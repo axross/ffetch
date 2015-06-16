@@ -155,9 +155,48 @@ describe('EasyAgent', () => {
       expect(ea.headers).to.eql({});
       expect(another.headers).to.eql({ 'Content-Type': 'application/json' });
     });
-
-
   });
 
-  describe
+  describe('EasyAgent.setQueries()', () => {
+    it('should return an instance that queries is appended', () => {
+      expect(
+        EasyAgent.get('http://first.url')
+          .setQueries({ q: 'easyagent' })
+          .queries
+      ).to.eql({ q: 'easyagent' });
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setQueries({ q: 'easyagent' })
+          .setQueries({ page: 2 })
+          .queries
+      ).to.eql({
+        q:    'easyagent',
+        page: 2,
+      });
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setQueries({
+            q:    'easyagent',
+            page: 2,
+          })
+          .setQueries({ order: 'desc' })
+          .queries
+      ).to.eql({
+        q:     'easyagent',
+        page:  2,
+        order: 'desc',
+      });
+    });
+
+    it('should return an instance that is another reference', () => {
+      const ea      = EasyAgent.get('http://first.url');
+      const another = ea.setQueries({ q: 'easyagent' });
+
+      expect(ea).to.not.be(another);
+      expect(ea.queries).to.eql({});
+      expect(another.queries).to.eql({ q: 'easyagent' });
+    });
+  });
 });

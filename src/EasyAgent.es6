@@ -17,12 +17,12 @@ class EasyAgent {
     this.body    = options.body    || null;
   }
 
-  setUrl(newUrl) {
-    return new EasyAgent(newUrl, this.options);
-  }
-
   __setOptions(options) {
     return new EasyAgent(this.url, _.assign({}, Object(this), options));
+  }
+
+  setUrl(newUrl) {
+    return new EasyAgent(newUrl, this.options);
   }
 
   setMethod(method) {
@@ -76,14 +76,14 @@ class EasyAgent {
   fetchJson() {
     return this
       .setHeaders({ 'Accept': 'application/json' })
-      .fetchResponse()
+      .fetch()
       .then((res) => { return res.json() });
   }
 
   fetchText(mimeType = 'text/plain') {
     return this
       .setHeaders({ 'Accept': mimeType })
-      .fetchResponse()
+      .fetch()
       .then((res) => { return res.text() });
   }
 
