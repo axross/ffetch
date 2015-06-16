@@ -42,10 +42,8 @@ class EasyAgent {
   }
 
   setJson(json) {
-    const jsonStr = JSON.stringify(json);
-
     return this.__setOptions({
-      body:    jsonStr,
+      body:    JSON.stringify(json),
       headers: _.assign({}, this.headers, {
         'Content-Type': 'application/json',
       }),

@@ -157,7 +157,7 @@ describe('EasyAgent', () => {
     });
   });
 
-  describe('EasyAgent.setQueries()', () => {
+  describe('EasyAgent#setQueries()', () => {
     it('should return an instance that queries is appended', () => {
       expect(
         EasyAgent.get('http://first.url')
@@ -197,6 +197,141 @@ describe('EasyAgent', () => {
       expect(ea).to.not.be(another);
       expect(ea.queries).to.eql({});
       expect(another.queries).to.eql({ q: 'easyagent' });
+    });
+  });
+
+  describe('EasyAgent#setBody()', () => {
+    it('should return an instance that body is changed', () => {
+      expect(
+        EasyAgent.get('http://first.url')
+          .setBody('body')
+          .body
+      ).to.be('body');
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setQueries({ q: 'easyagent' })
+          .setBody('body')
+          .body
+      ).to.be('body');
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setJson({ q: 'easyagent' })
+          .setBody('body')
+          .body
+      ).to.be('body');
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setBody('body')
+          .headers
+      ).to.eql({});
+    });
+
+    it('should return an instance that is another reference', () => {
+      const ea      = EasyAgent.get('http://first.url');
+      const another = ea.setBody('body');
+
+      expect(ea).to.not.be(another);
+      expect(ea.body).to.eql(null);
+      expect(another.body).to.eql('body');
+    });
+  });
+
+  describe('EasyAgent#setJson()', () => {
+    it('should return an instance that body is changed', () => {
+      expect(
+        EasyAgent.get('http://first.url')
+          .setJson({ q: 'easyagent' })
+          .body
+      ).to.be('{"q":"easyagent"}');
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setQueries({ order: 'desc' })
+          .setJson({ page: 2 })
+          .body
+      ).to.be('{"page":2}');
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setBody('body')
+          .setJson({ fork: true })
+          .body
+      ).to.be('{"fork":true}');
+    });
+
+    it('should return an instance that headers is appended', () => {
+      expect(
+        EasyAgent.get('http://first.url')
+          .setJson({ q: 'easyagent' })
+          .headers
+      ).to.eql({ 'Content-Type': 'application/json' });
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setForm({})
+          .setJson({ q: 'easyagent' })
+          .headers
+      ).to.eql({ 'Content-Type': 'application/json' });
+    });
+
+    it('should return an instance that is another reference', () => {
+      const ea      = EasyAgent.get('http://first.url');
+      const another = ea.setJson({ q: 'easyagent' });
+
+      expect(ea).to.not.be(another);
+      expect(ea.body).to.eql(null);
+      expect(another.body).to.eql('{"q":"easyagent"}');
+    });
+  });
+
+  describe('EasyAgent#setForm()', () => {
+    it('should return an instance that body is changed', () => {
+      expect(
+        EasyAgent.get('http://first.url')
+          .setForm({})
+          .body
+      ).to.eql({});
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setQueries({ order: 'desc' })
+          .setForm({})
+          .body
+      ).to.eql({});
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setBody('body')
+          .setForm({})
+          .body
+      ).to.eql({});
+    });
+
+    it('should return an instance that headers is appended', () => {
+      expect(
+        EasyAgent.get('http://first.url')
+          .setForm({})
+          .headers
+      ).to.eql({ 'Content-Type': 'application/x-www-form-urlencoded' });
+
+      expect(
+        EasyAgent.get('http://first.url')
+          .setJson({ q: 'easyagent' })
+          .setForm({})
+          .headers
+      ).to.eql({ 'Content-Type': 'application/x-www-form-urlencoded' });
+    });
+
+    it('should return an instance that is another reference', () => {
+      const ea      = EasyAgent.get('http://first.url');
+      const another = ea.setForm({ q: 'easyagent' });
+
+      expect(ea).to.not.be(another);
+      expect(ea.body).to.eql(null);
+      expect(another.body).to.eql({ q: 'easyagent' });
     });
   });
 });
