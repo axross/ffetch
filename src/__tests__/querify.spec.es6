@@ -19,6 +19,37 @@ describe('querify()', () => {
     );
   });
 
+  it('should return a string that include an unfolded array', () => {
+    expect(querify({
+      name: 'axross',
+      favorites: ['javascript', 'nodejs', 'iojs'],
+      chars: ['a', 'x', 'r', 'o', 's', 's'],
+    })).to.be(
+      '?name=axross&favorites[]=javascript&favorites[]=nodejs&favorites[]=iojs&chars[]=a&chars[]=x&chars[]=r&chars[]=o&chars[]=s&chars[]=s'
+    );
+  });
+
+  it('should return a string that include an unfolded object', () => {
+    expect(querify({
+      name: 'axross',
+      contact: {
+        twitter: 'axross_',
+        github:  'axross',
+        email:   'kou@axross.org',
+      },
+    })).to.be(
+      '?name=axross&contact[twitter]=axross_&contact[github]=axross&contact[email]=kou%40axross.org'
+    );
+  });
+
+  it('should encode a string like a "fixedEncodeURIComponent()" by MDN', () => {
+    expect(querify({
+      escape: '!\'()*!\'()*',
+    })).to.be(
+      '?escape=%21%27%28%29%2a%21%27%28%29%2a'
+    );
+  });
+
   it('should return an empty string when that receive empty object', () => {
     expect(querify({})).to.be('');
   });

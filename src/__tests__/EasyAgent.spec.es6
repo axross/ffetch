@@ -353,7 +353,7 @@ describe('EasyAgent', () => {
       EasyAgent.get('http://first.url', {
         method: 'GET',
         queries: { q: 'easyagent', page: 5 },
-        headers: { 'Accept': 'application/json' },
+        headers: { 'Accept': 'text/html' },
       })
         .fetch();
 
@@ -363,7 +363,7 @@ describe('EasyAgent', () => {
       expect(spyCall.args[0]).to.be('http://first.url?q=easyagent&page=5');
       expect(spyCall.args[1]).to.eql({
         method:  'GET',
-        headers: { 'Accept': 'application/json' },
+        headers: { 'Accept': 'text/html' },
         body:    null,
       });
     });
@@ -379,7 +379,7 @@ describe('EasyAgent', () => {
           users:   ['axross', 'axr', 'oss'],
           profile: { name: 'Kohei Asai', role: 'Software Engineer' },
         },
-        headers: { 'Accept': 'application/json' },
+        headers: { 'Accept': 'text/html' },
       })
         .setJson({
           name:    'easyagent',
@@ -396,7 +396,7 @@ describe('EasyAgent', () => {
       expect(spyCall.args[1]).to.eql({
         method: 'PUT',
         headers: {
-          'Accept':       'application/json',
+          'Accept':       'text/html',
           'Content-Type': 'application/json',
         },
         body: '{"name":"easyagent","repoUrl":"https://github.com/axross/easyagent"}',
