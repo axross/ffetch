@@ -14,10 +14,10 @@
   "keywords": [
     "xhr",
     "fetch",
-    "superagent",
     "ajax",
     "http",
-    "json"
+    "json",
+    "superagent"
   ],
   "author": "axross <kou@axross.org> (http://axross.me/)",
   "license": "MIT",
@@ -27,8 +27,6 @@
   "homepage": "https://github.com/axross/easyagent#readme",
   "devDependencies": {
     "babel": "^5.5.8",
-    "babelify": "^6.1.2",
-    "browserify": "^10.2.4",
     "expect.js": "^0.3.1",
     "mocha": "^2.2.5"
   },

@@ -68,10 +68,8 @@ var EasyAgent = (function () {
   }, {
     key: 'setJson',
     value: function setJson(json) {
-      var jsonStr = JSON.stringify(json);
-
       return this.__setOptions({
-        body: jsonStr,
+        body: JSON.stringify(json),
         headers: _util2['default'].assign({}, this.headers, {
           'Content-Type': 'application/json'
         })
