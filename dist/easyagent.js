@@ -36,14 +36,14 @@ var EasyAgent = (function () {
   }
 
   _createClass(EasyAgent, [{
-    key: 'setUrl',
-    value: function setUrl(newUrl) {
-      return new EasyAgent(newUrl, this.options);
-    }
-  }, {
     key: '__setOptions',
     value: function __setOptions(options) {
       return new EasyAgent(this.url, _util2['default'].assign({}, Object(this), options));
+    }
+  }, {
+    key: 'setUrl',
+    value: function setUrl(newUrl) {
+      return new EasyAgent(newUrl, this.options);
     }
   }, {
     key: 'setMethod',
@@ -103,7 +103,7 @@ var EasyAgent = (function () {
   }, {
     key: 'fetchJson',
     value: function fetchJson() {
-      return this.setHeaders({ 'Accept': 'application/json' }).fetchResponse().then(function (res) {
+      return this.setHeaders({ 'Accept': 'application/json' }).fetch().then(function (res) {
         return res.json();
       });
     }
@@ -112,7 +112,7 @@ var EasyAgent = (function () {
     value: function fetchText() {
       var mimeType = arguments[0] === undefined ? 'text/plain' : arguments[0];
 
-      return this.setHeaders({ 'Accept': mimeType }).fetchResponse().then(function (res) {
+      return this.setHeaders({ 'Accept': mimeType }).fetch().then(function (res) {
         return res.text();
       });
     }

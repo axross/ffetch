@@ -15,14 +15,12 @@ var _util = require('./util');
 
 var _util2 = _interopRequireDefault(_util);
 
-var globalPlugins = [];
-
-var fetch = function fetch() {
+var _fetch = function fetch() {
   throw new ReferenceError('fetch is not defined');
 };
 
 if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
-  fetch = window.fetch;
+  _fetch = window.fetch;
 }
 
 var EasyAgent = (function () {
@@ -36,50 +34,46 @@ var EasyAgent = (function () {
     this.queries = options.queries || {};
     this.headers = options.headers || {};
     this.body = options.body || null;
-    this.plugins = options.plugins || globalPlugins;
   }
 
   _createClass(EasyAgent, [{
-    key: 'setUrl',
-    value: function setUrl(newUrl) {
-      return new this.constructor(newUrl, this.options);
+    key: '__setOptions',
+    value: function __setOptions(options) {
+      return new EasyAgent(this.url, _util2['default'].assign({}, Object(this), options));
     }
   }, {
-    key: 'setOptions',
-    value: function setOptions(newOptions) {
-      var options = _util2['default'].assign(Object(this), newOptions);
-      var method = options.method.toUpperCase();
-      var body = options.body;
-
-      if (body !== null && (method === 'GET' || method === 'HEAD')) {
-        throw new TypeError('Body not allowed for GET or HEAD requests');
-      }
-
-      return new this.constructor(this.url, options);
+    key: 'setUrl',
+    value: function setUrl(newUrl) {
+      return new EasyAgent(newUrl, this.options);
     }
   }, {
     key: 'setMethod',
     value: function setMethod(method) {
-      return this.setOptions({ method: method });
+      return this.__setOptions({ method: method });
     }
   }, {
     key: 'setHeaders',
     value: function setHeaders(headers) {
-      return this.setOptions({ headers: _util2['default'].assign(this.headers, headers) });
+      return this.__setOptions({ headers: _util2['default'].assign({}, this.headers, headers) });
+    }
+  }, {
+    key: 'setQueries',
+    value: function setQueries(queries) {
+      return this.__setOptions({ queries: _util2['default'].assign({}, this.queries, queries) });
     }
   }, {
     key: 'setBody',
     value: function setBody(body) {
-      return this.setOptions({ body: body });
+      return this.__setOptions({ body: body });
     }
   }, {
     key: 'setJson',
     value: function setJson(json) {
       var jsonStr = JSON.stringify(json);
 
-      return this.setOptions({
+      return this.__setOptions({
         body: jsonStr,
-        headers: _util2['default'].assign(this.headers, {
+        headers: _util2['default'].assign({}, this.headers, {
           'Content-Type': 'application/json'
         })
       });
@@ -87,46 +81,30 @@ var EasyAgent = (function () {
   }, {
     key: 'setForm',
     value: function setForm(form) {
-      return this.setOptions({
+      return this.__setOptions({
         body: form,
-        headers: _util2['default'].assign(this.headers, {
+        headers: _util2['default'].assign({}, this.headers, {
           'Content-Type': 'application/x-www-form-urlencoded'
         })
       });
     }
   }, {
-    key: 'setQueries',
-    value: function setQueries(queries) {
-      return this.setOptions({ queries: _util2['default'].assign(this.queries, queries) });
-    }
-  }, {
-    key: 'use',
-    value: function use(plugin) {
-      return this.setOptions({ plugins: this.plugins.concat([plugin]) });
-    }
-  }, {
-    key: 'fetchResponse',
-    value: function fetchResponse() {
+    key: 'fetch',
+    value: function fetch() {
       var queryString = _util2['default'].queryString(this.queries);
 
-      var f = fetch(this.url + queryString, {
+      var f = _fetch(this.url + queryString, {
         method: this.method,
         headers: this.hearders,
         body: this.body
       });
-
-      if (this.plugins.length > 0) {
-        f = this.plugins.reduce(function (__f, plugin) {
-          return plugin(__f).call(__f);
-        }, f);
-      }
 
       return f;
     }
   }, {
     key: 'fetchJson',
     value: function fetchJson() {
-      return this.setHeaders({ 'Accept': 'application/json' }).fetchResponse().then(function (res) {
+      return this.setHeaders({ 'Accept': 'application/json' }).fetch().then(function (res) {
         return res.json();
       });
     }
@@ -135,7 +113,7 @@ var EasyAgent = (function () {
     value: function fetchText() {
       var mimeType = arguments[0] === undefined ? 'text/plain' : arguments[0];
 
-      return this.setHeaders({ 'Accept': mimeType }).fetchResponse().then(function (res) {
+      return this.setHeaders({ 'Accept': mimeType }).fetch().then(function (res) {
         return res.text();
       });
     }
@@ -147,56 +125,37 @@ var EasyAgent = (function () {
   }], [{
     key: 'get',
     value: function get(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'GET', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'GET', body: null }, options));
     }
   }, {
     key: 'post',
     value: function post(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'POST', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'POST', body: null }, options));
     }
   }, {
     key: 'put',
     value: function put(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'PUT', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'PUT', body: null }, options));
     }
   }, {
     key: 'del',
     value: function del(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'DELETE', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'DELETE', body: null }, options));
     }
   }, {
     key: 'head',
     value: function head(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'HEAD', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'HEAD', body: null }, options));
     }
   }, {
     key: 'opt',
     value: function opt(url, options) {
-      return new this(url, _util2['default'].assign({ method: 'OPTIONS', body: null }, options));
+      return new EasyAgent(url, _util2['default'].assign({ method: 'OPTIONS', body: null }, options));
     }
   }, {
     key: 'setFetchFunction',
     value: function setFetchFunction(anotherFetch) {
-      fetch = anotherFetch;
-    }
-  }, {
-    key: 'use',
-    value: function use(plugin) {
-      globalPlugins.push(plugin);
-    }
-  }, {
-    key: 'unuse',
-    value: function unuse(plugin) {
-      var index = globalPlugins.indexOf(plugin);
-
-      if (index < 0) return false;
-
-      globalPlugins.splice(index, 1);
-    }
-  }, {
-    key: 'unuseAll',
-    value: function unuseAll() {
-      globalPlugins.splice(0, globalPlugins.length);
+      _fetch = anotherFetch;
     }
   }]);
 
@@ -204,6 +163,9 @@ var EasyAgent = (function () {
 })();
 
 ;
+
+// TODO:
+// EasyAgent.addCustomFetcher()
 
 exports['default'] = EasyAgent;
 module.exports = exports['default'];
@@ -241,34 +203,41 @@ module.exports = exports['default'];
 var EasyAgent = require('../dist/EasyAgent');
 
 document.addEventListener('DOMContentLoaded', function() {
-  var formEl   = document.querySelector('.form');
-  var inputEl  = document.querySelector('.input');
-  var resultEl = document.querySelector('.result');
+  var baseAgent = EasyAgent
+    .get('https://api.github.com/search/repositories')
+    .setQueries({ page: 1 });
 
-  var outputResult = function(repos) {
-    var fragment = document.createDocumentFragment();
+  var currentAgent;
 
-    var template = document.createElement('li');
-    template.appendChild(document.createElement('a'));
-    template.appendChild(document.createElement('span'));
+  var formEl      = document.querySelector('.form');
+  var inputEl     = document.querySelector('.input');
+  var resultEl    = document.querySelector('.result');
+  var fetchMoreEl = document.querySelector('.fetchMore');
 
+  var templateEl = document.createElement('li');
+  templateEl.appendChild(document.createElement('a'));
+  templateEl.appendChild(document.createElement('span'));
+
+  var refreshResult = function() {
     while (resultEl.children.length > 0) {
       resultEl.removeChild(resultEl.firstChild);
     }
+  }
+
+  var appendResults = function(repos) {
+    var fragment = document.createDocumentFragment();
 
     repos.forEach(function(repo) {
-      var node   = template.cloneNode(true);
-      var aEl    = node.querySelector('a');
-      var spanEl = node.querySelector('span');
-
-      console.log(node);
+      var cloned = templateEl.cloneNode(true);
+      var aEl    = cloned.querySelector('a');
+      var spanEl = cloned.querySelector('span');
 
       aEl.textContent = repo.full_name;
       aEl.setAttribute('href', repo.url);
 
       spanEl.textContent = '(' + repo.stargazers_count + ')'
 
-      fragment.appendChild(node);
+      fragment.appendChild(cloned);
     });
 
     resultEl.appendChild(fragment);
@@ -277,13 +246,34 @@ document.addEventListener('DOMContentLoaded', function() {
   formEl.addEventListener('submit', function(e) {
     e.preventDefault();
 
-    var query = inputEl.value.trim();
+    currentAgent = baseAgent.setQueries({ q: inputEl.value.trim() });
 
-    EasyAgent.get('https://api.github.com/search/repositories')
-      .setQueries({ q: query })
+    currentAgent
       .fetchJson()
       .then(function(json) {
-        outputResult(json.items);
+        refreshResult();
+        appendResults(json.items);
+
+        fetchMoreEl.style.display = 'inline-block';
+      })
+      .catch(function(err) {
+        console.error(err);
+      });
+  });
+
+  fetchMoreEl.addEventListener('click', function() {
+    const page = currentAgent.queries.page;
+
+    currentAgent = currentAgent.setQueries({ page: page + 1 });
+
+    currentAgent
+      .fetchJson()
+      .then(function(json) {
+        appendResults(json.items);
+
+        if (json.total_count <= page * 30) {
+          fetchMoreEl.style.display = 'none';
+        }
       })
       .catch(function(err) {
         console.error(err);

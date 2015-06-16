@@ -17,15 +17,39 @@ EasyAgent is nothing more than a wrapper library of [fetch API](https://fetch.sp
 ```javascript
 import EasyAgent from 'easyagent';
 
-EasyAgent.get('https://api.github.com/search/repositories')
-  .setQueries({ q: 'easyagent' })  // append "?q=easyagent"  to url
-  .fetchJSON()                     // returns promise
-  .then(json => {
-    console.log(json);
-  })
-  .catch(err => {
-    console.error(err);
-  });
+const baseAgent = EasyAgent
+  .get('https://api.github.com/search/repositories')
+  .setQueries({ page: 1 });
+
+const currentAgent;
+
+document.querySelector('.form').addEventListener('submit', () => {
+  currentAgent = baseAgent.setQueries({ q: query });
+
+  currentAgent
+    .fetchJson();
+    .then(json => {
+      console.log(json);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+});
+
+document.querySelector('.fetchMore').addEventListener('submit', () => {
+  const page = currentAgent.queries.page;
+
+  currentAgent = currentAgent.setQueries({ page: page + 1 });
+
+  currentAgent
+    .fetchJson();
+    .then(json => {
+      console.log(json);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+});
 ```
 
 ## Installation
