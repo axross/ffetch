@@ -23,7 +23,7 @@ const baseAgent = EasyAgent
 
 const currentAgent;
 
-document.querySelector('.form').addEventListener('submit', () => {
+const search = query => {
   currentAgent = baseAgent.setQueries({ q: query });
 
   currentAgent
@@ -34,9 +34,9 @@ document.querySelector('.form').addEventListener('submit', () => {
     .catch(err => {
       console.error(err);
     });
-});
+};
 
-document.querySelector('.fetchMore').addEventListener('submit', () => {
+const fetchMore = () => {
   const page = currentAgent.queries.page;
 
   currentAgent = currentAgent.setQueries({ page: page + 1 });
@@ -49,7 +49,7 @@ document.querySelector('.fetchMore').addEventListener('submit', () => {
     .catch(err => {
       console.error(err);
     });
-});
+};
 ```
 
 ## Installation
