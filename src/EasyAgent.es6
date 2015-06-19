@@ -76,18 +76,14 @@ class EasyAgent {
     return this
       .setHeaders({ 'Accept': 'application/json' })
       .fetch()
-      .then((res) => { return res.json() });
+      .then(res => res.json());
   }
 
   fetchText(mimeType = 'text/plain') {
     return this
       .setHeaders({ 'Accept': mimeType })
       .fetch()
-      .then((res) => { return res.text() });
-  }
-
-  fetchHtml() {
-    return this.fetchText('text/html');
+      .then(res => res.text());
   }
 
   static get(url, options) {

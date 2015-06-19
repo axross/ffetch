@@ -118,11 +118,6 @@ var EasyAgent = (function () {
         return res.text();
       });
     }
-  }, {
-    key: 'fetchHtml',
-    value: function fetchHtml() {
-      return this.fetchText('text/html');
-    }
   }], [{
     key: 'get',
     value: function get(url, options) {

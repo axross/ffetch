@@ -338,8 +338,6 @@ describe('EasyAgent', () => {
   });
 
   describe('EasyAgent#fetch()', () => {
-    const fetchStub = () => Promise.resolve(true);
-
     afterEach(() => {
       EasyAgent.setFetchFunction(() => {
         throw new ReferenceError('fetch is not defined');
@@ -347,9 +345,10 @@ describe('EasyAgent', () => {
     });
 
     it('should call fetch function with arguments', () => {
-      const spy = sinon.spy(fetchStub);
+      const fetchStub = () => Promise.resolve(true);
+      const fetchSpy  = sinon.spy(fetchStub);
 
-      EasyAgent.setFetchFunction(spy);
+      EasyAgent.setFetchFunction(fetchSpy);
       EasyAgent.get('http://first.url', {
         method: 'GET',
         queries: { q: 'easyagent', page: 5 },
@@ -357,11 +356,9 @@ describe('EasyAgent', () => {
       })
         .fetch();
 
-      const spyCall = spy.firstCall;
-
-      expect(spy.calledOnce).to.be(true);
-      expect(spyCall.args[0]).to.be('http://first.url?q=easyagent&page=5');
-      expect(spyCall.args[1]).to.eql({
+      expect(fetchSpy.calledOnce).to.be(true);
+      expect(fetchSpy.firstCall.args[0]).to.be('http://first.url?q=easyagent&page=5');
+      expect(fetchSpy.firstCall.args[1]).to.eql({
         method:  'GET',
         headers: { 'Accept': 'text/html' },
         body:    null,
@@ -369,9 +366,10 @@ describe('EasyAgent', () => {
     });
 
     it('should call fetch function with arguments #2', () => {
-      const spy = sinon.spy(fetchStub);
+      const fetchStub = () => Promise.resolve(true);
+      const fetchSpy  = sinon.spy(fetchStub);
 
-      EasyAgent.setFetchFunction(spy);
+      EasyAgent.setFetchFunction(fetchSpy);
       EasyAgent.get('http://second.url/3', {
         method: 'PUT',
         queries: {
@@ -387,19 +385,85 @@ describe('EasyAgent', () => {
         })
         .fetch();
 
-      const spyCall = spy.firstCall;
-
-      expect(spy.calledOnce).to.be(true);
-      expect(spyCall.args[0]).to.be(
+      expect(fetchSpy.calledOnce).to.be(true);
+      expect(fetchSpy.firstCall.args[0]).to.be(
         'http://second.url/3?force=true&users[]=axross&users[]=axr&users[]=oss&profile[name]=Kohei%20Asai&profile[role]=Software%20Engineer'
       );
-      expect(spyCall.args[1]).to.eql({
+      expect(fetchSpy.firstCall.args[1]).to.eql({
         method: 'PUT',
         headers: {
           'Accept':       'text/html',
           'Content-Type': 'application/json',
         },
         body: '{"name":"easyagent","repoUrl":"https://github.com/axross/easyagent"}',
+      });
+    });
+  });
+
+  describe('EasyAgent#fetchJson()', () => {
+    afterEach(() => {
+      EasyAgent.setFetchFunction(() => {
+        throw new ReferenceError('fetch is not defined');
+      });
+    });
+
+    it('should call response.json() from arguments of fetch.then()\'s callback', done => {
+      const jsonSpy   = sinon.spy();
+      const fetchStub = () => Promise.resolve({ json: jsonSpy });
+      const fetchSpy  = sinon.spy(fetchStub);
+
+      EasyAgent.setFetchFunction(fetchSpy);
+      EasyAgent.post('http://first.url')
+        .setJson({ q: 'easyagent' })
+        .fetchJson()
+        .then(() => {
+          expect(jsonSpy.calledOnce).to.be(true);
+          done();
+        });
+
+      expect(fetchSpy.calledOnce).to.be(true);
+      expect(fetchSpy.firstCall.args[0]).to.be('http://first.url');
+      expect(fetchSpy.firstCall.args[1]).to.eql({
+        method: 'POST',
+        headers: {
+          'Accept':       'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: '{"q":"easyagent"}',
+      });
+    });
+  });
+
+  describe('EasyAgent#fetchText()', () => {
+    afterEach(() => {
+      EasyAgent.setFetchFunction(() => {
+        throw new ReferenceError('fetch is not defined');
+      });
+    });
+
+    it('should call response.text() from arguments of fetch.then()\'s callback', done => {
+      const textSpy   = sinon.spy();
+      const fetchStub = () => Promise.resolve({ text: textSpy });
+      const fetchSpy  = sinon.spy(fetchStub);
+
+      EasyAgent.setFetchFunction(fetchSpy);
+      EasyAgent.post('http://first.url')
+        .setJson({ q: 'easyagent' })
+        .fetchText()
+        .then(() => {
+          expect(textSpy.calledOnce).to.be(true);
+          done();
+        });
+
+      expect(fetchSpy.calledOnce).to.be(true);
+      expect(fetchSpy.firstCall.args[0]).to.be('http://first.url');
+      expect(fetchSpy.firstCall.args[1]).to.eql({
+        method: 'POST',
+        headers: {
+          'Accept':       'text/plain',
+          'Content-Type': 'application/json',
+        },
+        body: '{"q":"easyagent"}',
       });
     });
   });
