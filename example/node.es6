@@ -3,7 +3,7 @@ import EasyAgent from '../dist/EasyAgent';
 
 EasyAgent.setFetchFunction(fetch);
 
-const query = process.argv[2];
+const query = process.argv[2] || 'easyagent';
 
 EasyAgent.get('https://api.github.com/search/repositories')
   .setQueries({ q: query })
