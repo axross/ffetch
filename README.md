@@ -21,10 +21,10 @@ const baseAgent = EasyAgent
   .get('https://api.github.com/search/repositories')
   .setQueries({ page: 1 });
 
-const currentAgent;
+let currentAgent;
 
 const search = query => {
-  currentAgent = baseAgent.setQueries({ q: query });
+  currentAgent = baseAgent.setQueries({ q: query, page: 1 });
 
   currentAgent
     .fetchJson()
