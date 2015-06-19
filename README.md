@@ -1,4 +1,4 @@
-# [WIP] EasyAgent
+# EasyAgent
 
 [![Circle CI](https://circleci.com/gh/axross/easyagent.svg?style=svg)](https://circleci.com/gh/axross/easyagent)
 [![npm version](https://badge.fury.io/js/easyagent.svg)](http://badge.fury.io/js/easyagent)
