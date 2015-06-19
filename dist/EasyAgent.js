@@ -160,8 +160,5 @@ var EasyAgent = (function () {
 
 ;
 
-// TODO:
-// EasyAgent.addCustomFetcher()
-
 exports['default'] = EasyAgent;
 module.exports = exports['default'];

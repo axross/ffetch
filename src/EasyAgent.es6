@@ -115,7 +115,4 @@ class EasyAgent {
   }
 };
 
-// TODO:
-// EasyAgent.addCustomFetcher()
-
 export default EasyAgent;
