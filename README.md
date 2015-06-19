@@ -1,6 +1,7 @@
 # [WIP] EasyAgent
 
 [![Circle CI](https://circleci.com/gh/axross/easyagent.svg?style=svg)](https://circleci.com/gh/axross/easyagent)
+[![npm version](https://badge.fury.io/js/easyagent.svg)](http://badge.fury.io/js/easyagent)
 
 EasyAgent is nothing more than a wrapper library of [Fetch API](https://fetch.spec.whatwg.org/), but EasyAgent certainly helps your using fetch API. Anyhow, view [examples](#examples) and [docs](#installation).
 
