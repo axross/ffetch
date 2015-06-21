@@ -18,7 +18,7 @@ EasyAgent is nothing more than a wrapper library of [Fetch API](https://fetch.sp
 import EasyAgent from 'easyagent';
 
 const baseAgent = EasyAgent
-  .get('https://api.github.com/search/repositories')
+  .get('path/to/api')
   .setQueries({ page: 1 });
 
 let currentAgent;
@@ -28,12 +28,8 @@ const search = query => {
 
   currentAgent
     .fetchJson()
-    .then(json => {
-      console.log(json);
-    })
-    .catch(err => {
-      console.error(err);
-    });
+    .then(json => console.log(json))
+    .catch(err => console.error(err));
 };
 
 const fetchMore = () => {
@@ -43,12 +39,8 @@ const fetchMore = () => {
 
   currentAgent
     .fetchJson()
-    .then(json => {
-      console.log(json);
-    })
-    .catch(err => {
-      console.error(err);
-    });
+    .then(json => console.log(json))
+    .catch(err => console.error(err))
 };
 ```
 
@@ -78,7 +70,7 @@ import EasyAgent from 'easyagent';
 Create agent. It returns instance of EasyAgent.
 
 ```javascript
-const ea = EasyAgent.get('https://api.github.com/search/repositories');
+const ea = EasyAgent.get('path/to/api');
 // => instance of EasyAgent
 ```
 
@@ -89,18 +81,18 @@ HTTP Method can change easily. use `ea.setMethod()`.
 Change the URL. It returns instance of EasyAgent but that is another reference than receiver.
 
 ```javascript
-const ea = EasyAgent.get('https://api.github.com/search/repositories');
+const ea = EasyAgent.get('path/to/api');
 
-const another = ea.setUrl('https://api.github.com/users');
+const another = ea.setUrl('path/to/another/api');
 
 another;
 // => instance of EasyAgent
 
 ea.url;
-// => "https://api.github.com/search/repositories"
+// => "path/to/api"
 
 another.url;
-// => "https://api.github.com/users"
+// => "path/to/another/api"
 ```
 
 #### EasyAgent#setMethod(methodString)
@@ -108,7 +100,7 @@ another.url;
 Change the HTTP Request Method. It returns instance of EasyAgent but that is another reference than receiver.
 
 ```javascript
-const ea = EasyAgent.get('https://api.github.com/search/repositories');
+const ea = EasyAgent.get('path/to/api');
 
 const another = ea.setMethod('POST');
 
@@ -127,7 +119,7 @@ another.method;
 Append the HTTP Request Header. It returns instance of EasyAgent but that is another reference than receiver.
 
 ```javascript
-const ea = EasyAgent.get('https://api.github.com/search/repositories');
+const ea = EasyAgent.get('path/to/api');
 
 const another = ea.setHeaders({ 'X-Custom-Header': 'abc' });
 const anotherTwo = another.setHeaders({ 'X-User-Header': 'def' });
@@ -150,7 +142,7 @@ anotherTwo.headers;
 Append the URL Queries. It returns instance of EasyAgent but that is another reference than receiver.
 
 ```javascript
-const ea = EasyAgent.get('https://api.github.com/search/repositories');
+const ea = EasyAgent.get('path/to/api');
 
 const another = ea.setQueries({ 'q': 'easyagent' });
 const anotherTwo = another.setQueries({ 'page': 2 });
@@ -173,7 +165,7 @@ anotherTwo.queries;
 Set the HTTP Request Body. It returns instance of EasyAgent but that is another reference than receiver.
 
 ```javascript
-const ea = EasyAgent.post('https://api.github.com/search/repositories');
+const ea = EasyAgent.post('path/to/api');
 
 const another = ea.setBody('body');
 
@@ -192,7 +184,7 @@ another.body;
 Set the HTTP Request Body and Headers. This method append `Content-Type: application/json` to HTTP Request Headers. Body will convert to string by 'JSON.stringify()'. It returns instance of EasyAgent but that is another reference than receiver.
 
 ```javascript
-const ea = EasyAgent.post('https://api.github.com/search/repositories');
+const ea = EasyAgent.post('path/to/api');
 
 const another = ea.setJson({ id: 3 });
 
@@ -214,7 +206,7 @@ another.headers;
 Set the HTTP Request Body and Headers. This method append `Content-Type: application/x-www-form-urlencoded` to HTTP Request Headers. Body expects a `Form` Object. It returns instance of EasyAgent but that is another reference than receiver.
 
 ```javascript
-const ea   = EasyAgent.post('https://api.github.com/search/repositories');
+const ea   = EasyAgent.post('path/to/api');
 const form = document.querySelector('form');
 
 const another = ea.setForm(new FormData(form));
@@ -237,7 +229,7 @@ another.headers;
 Send the HTTP Request. This method returns the same as `fetch()`.
 
 ```javascript
-const ea = EasyAgent.get('https://api.github.com/search/repositories')
+const ea = EasyAgent.get('path/to/api')
   .setHeaders({ 'Accept': 'application/json' })
   .setQueries({
     q:    'easyagent',
@@ -254,7 +246,7 @@ const ea = EasyAgent.get('https://api.github.com/search/repositories')
 Send the HTTP Request. This method append `Accept: application/json` to HTTP Request Headers, and this method returns an object of thenable by `res.json()`.
 
 ```javascript
-const ea = EasyAgent.get('https://api.github.com/search/repositories')
+const ea = EasyAgent.get('path/to/api')
   .setQueries({
     q:    'easyagent',
     page: 2,
@@ -267,6 +259,31 @@ const ea = EasyAgent.get('https://api.github.com/search/repositories')
 #### EasyAgent#fetchText([mimeType = 'text/plain'])
 
 Send the HTTP Request. This method append `Accept: text/plain` to HTTP Request Headers that value can changed by first argument. This method returns an object of thenable by `res.text()`.
+
+#### EasyAgent.setFetchFunction(anotherFetchFunction)
+
+Set another `fetch()` function. `anotherFetchFunction` is used in the `EasyAgent#fetch()` and the like.
+
+```javascript
+import fetch     from 'isomorphic-fetch';
+import EasyAgent from 'easyagent';
+
+EasyAgent.setFetchFunction(fetch);
+
+const query = process.argv[2] || 'easyagent';
+
+EasyAgent.get('/path/to/api')
+  .setQueries({ q: query })
+  .fetchJson()
+  .then(json => {
+    console.log(json);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+```
+
+It can run on Node.js.
 
 ## License
 
