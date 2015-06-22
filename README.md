@@ -15,33 +15,12 @@ EasyAgent is nothing more than a wrapper library of [Fetch API](https://fetch.sp
 ## Example
 
 ```javascript
-import EasyAgent from 'easyagent';
-
-const baseAgent = EasyAgent
+EasyAgent
   .get('path/to/api')
   .setQueries({ page: 1 });
-
-let currentAgent;
-
-const search = query => {
-  currentAgent = baseAgent.setQueries({ q: query, page: 1 });
-
-  currentAgent
-    .fetchJson()
-    .then(json => console.log(json))
-    .catch(err => console.error(err));
-};
-
-const fetchMore = () => {
-  const page = currentAgent.queries.page;
-
-  currentAgent = currentAgent.setQueries({ page: page + 1 });
-
-  currentAgent
-    .fetchJson()
-    .then(json => console.log(json))
-    .catch(err => console.error(err))
-};
+  .fetchJson()
+  .then(json => console.log(json))
+  .catch(err => console.error(err));
 ```
 
 ## Installation
@@ -284,6 +263,42 @@ EasyAgent.get('/path/to/api')
 ```
 
 It can run on Node.js.
+
+## Immutable Setters
+
+`EasyAgent#setXxx` are Immutable Setters. There return the cloned another instance.
+
+You can write like this:
+
+```javascript
+import EasyAgent from 'easyagent';
+
+const baseAgent = EasyAgent
+  .get('path/to/api')
+  .setQueries({ page: 1 });
+
+let currentAgent;
+
+const search = query => {
+  currentAgent = baseAgent.setQueries({ q: query, page: 1 });
+
+  currentAgent
+    .fetchJson()
+    .then(json => console.log(json))
+    .catch(err => console.error(err));
+};
+
+const fetchMore = () => {
+  const page = currentAgent.queries.page;
+
+  currentAgent = currentAgent.setQueries({ page: page + 1 });
+
+  currentAgent
+    .fetchJson()
+    .then(json => console.log(json))
+    .catch(err => console.error(err))
+};
+```
 
 ## License
 
