@@ -115,4 +115,4 @@ class EasyAgent {
   }
 };
 
-export default EasyAgent;
+export default { EasyAgent as request };
