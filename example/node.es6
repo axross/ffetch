@@ -1,11 +1,11 @@
 import fetch     from 'isomorphic-fetch';
-import EasyAgent from '../dist/EasyAgent';
+import request from '../dist/EasyAgent';
 
 EasyAgent.setFetchFunction(fetch);
 
 const query = process.argv[2] || 'easyagent';
 
-EasyAgent.get('https://api.github.com/search/repositories')
+request.get('https://api.github.com/search/repositories')
   .setQueries({ q: query })
   .fetchJson()
   .then(json => {
