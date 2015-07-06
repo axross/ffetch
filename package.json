@@ -1,6 +1,6 @@
 {
   "name": "easyagent",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Simple wrapper library of fetch API.",
   "main": "./dist/EasyAgent.js",
   "scripts": {
