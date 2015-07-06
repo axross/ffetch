@@ -37,6 +37,8 @@ var EasyAgent = (function () {
     this.queries = options.queries || {};
     this.headers = options.headers || {};
     this.body = options.body || null;
+    this.credentials = options.credentials;
+    this.chache = options.chache;
   }
 
   _createClass(EasyAgent, [{
@@ -94,18 +96,16 @@ var EasyAgent = (function () {
     value: function fetch() {
       var querified = (0, _querify2['default'])(this.queries);
 
-      var f = _fetch(this.url + querified, {
+      return _fetch(this.url + querified, {
         method: this.method,
         headers: this.headers,
         body: this.body
       });
-
-      return f;
     }
   }, {
     key: 'fetchJson',
     value: function fetchJson() {
-      return this.setHeaders({ 'Accept': 'application/json' }).fetch().then(function (res) {
+      return this.setHeaders({ Accept: 'application/json' }).fetch().then(function (res) {
         return res.json();
       });
     }
@@ -114,39 +114,57 @@ var EasyAgent = (function () {
     value: function fetchText() {
       var mimeType = arguments[0] === undefined ? 'text/plain' : arguments[0];
 
-      return this.setHeaders({ 'Accept': mimeType }).fetch().then(function (res) {
+      return this.setHeaders({ Accept: mimeType }).fetch().then(function (res) {
         return res.text();
       });
     }
   }], [{
     key: 'get',
     value: function get(url, options) {
-      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'GET', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({
+        method: 'GET',
+        body: null
+      }, options));
     }
   }, {
     key: 'post',
     value: function post(url, options) {
-      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'POST', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({
+        method: 'POST',
+        body: null
+      }, options));
     }
   }, {
     key: 'put',
     value: function put(url, options) {
-      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'PUT', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({
+        method: 'PUT',
+        body: null
+      }, options));
     }
   }, {
     key: 'del',
     value: function del(url, options) {
-      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'DELETE', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({
+        method: 'DELETE',
+        body: null
+      }, options));
     }
   }, {
     key: 'head',
     value: function head(url, options) {
-      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'HEAD', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({
+        method: 'HEAD',
+        body: null
+      }, options));
     }
   }, {
     key: 'opt',
     value: function opt(url, options) {
-      return new EasyAgent(url, (0, _objectAssign2['default'])({ method: 'OPTIONS', body: null }, options));
+      return new EasyAgent(url, (0, _objectAssign2['default'])({
+        method: 'OPTIONS',
+        body: null
+      }, options));
     }
   }, {
     key: 'setFetchFunction',
@@ -157,8 +175,6 @@ var EasyAgent = (function () {
 
   return EasyAgent;
 })();
-
-;
 
 exports['default'] = EasyAgent;
 module.exports = exports['default'];

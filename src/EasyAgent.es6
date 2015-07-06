@@ -11,11 +11,13 @@ if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
 
 class EasyAgent {
   constructor(url, options = {}) {
-    this.url     = url;
-    this.method  = options.method  || 'GET';
-    this.queries = options.queries || {};
-    this.headers = options.headers || {};
-    this.body    = options.body    || null;
+    this.url         = url;
+    this.method      = options.method || 'GET';
+    this.queries     = options.queries || {};
+    this.headers     = options.headers || {};
+    this.body        = options.body || null;
+    this.credentials = options.credentials;
+    this.chache      = options.chache;
   }
 
   __setOptions(options) {
@@ -63,56 +65,72 @@ class EasyAgent {
   fetch() {
     const querified = querify(this.queries);
 
-    let f = fetch(this.url + querified, {
+    return fetch(this.url + querified, {
       method:  this.method,
       headers: this.headers,
       body:    this.body,
     });
-
-    return f;
   }
 
   fetchJson() {
     return this
-      .setHeaders({ 'Accept': 'application/json' })
+      .setHeaders({ Accept: 'application/json' })
       .fetch()
       .then(res => res.json());
   }
 
   fetchText(mimeType = 'text/plain') {
     return this
-      .setHeaders({ 'Accept': mimeType })
+      .setHeaders({ Accept: mimeType })
       .fetch()
       .then(res => res.text());
   }
 
   static get(url, options) {
-    return new EasyAgent(url, assign({ method: 'GET', body: null }, options));
+    return new EasyAgent(url, assign({
+      method: 'GET',
+      body:   null,
+    }, options));
   }
 
   static post(url, options) {
-    return new EasyAgent(url, assign({ method: 'POST', body: null }, options));
+    return new EasyAgent(url, assign({
+      method: 'POST',
+      body:   null,
+    }, options));
   }
 
   static put(url, options) {
-    return new EasyAgent(url, assign({ method: 'PUT', body: null }, options));
+    return new EasyAgent(url, assign({
+      method: 'PUT',
+      body:   null,
+    }, options));
   }
 
   static del(url, options) {
-    return new EasyAgent(url, assign({ method: 'DELETE', body: null }, options));
+    return new EasyAgent(url, assign({
+      method: 'DELETE',
+      body:   null,
+    }, options));
   }
 
   static head(url, options) {
-    return new EasyAgent(url, assign({ method: 'HEAD', body: null }, options));
+    return new EasyAgent(url, assign({
+      method: 'HEAD',
+      body:   null,
+    }, options));
   }
 
   static opt(url, options) {
-    return new EasyAgent(url, assign({ method: 'OPTIONS', body: null }, options));
+    return new EasyAgent(url, assign({
+      method: 'OPTIONS',
+      body:   null,
+    }, options));
   }
 
   static setFetchFunction(anotherFetch) {
     fetch = anotherFetch;
   }
-};
+}
 
 export default EasyAgent;
