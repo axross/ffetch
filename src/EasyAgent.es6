@@ -66,9 +66,11 @@ class EasyAgent {
     const querified = querify(this.queries);
 
     return fetch(this.url + querified, {
-      method:  this.method,
-      headers: this.headers,
-      body:    this.body,
+      method:      this.method,
+      headers:     this.headers,
+      body:        this.body,
+      credentials: this.credentials,
+      cache:       this.cache,
     });
   }
 
