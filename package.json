@@ -1,0 +1,35 @@
+{
+  "name": "ffetch",
+  "version": "0.0.0",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "lint": "eslint ./sources/*.es6 ./tests/*.es6",
+    "test": "mocha -u bdd -R spec --compilers es6:babel/register -r ./tests/initialize.es6 ./tests/**/*.spec.es6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axross/ffetch.git"
+  },
+  "author": "axross <kou@axross.org> (http://axross.me/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/axross/ffetch/issues"
+  },
+  "homepage": "https://github.com/axross/ffetch#readme",
+  "description": "",
+  "dependencies": {
+    "querystring": "^0.2.0"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-eslint": "^4.1.3",
+    "es6-promise": "^3.0.2",
+    "eslint": "^1.7.1",
+    "expect.js": "^0.3.1",
+    "isomorphic-fetch": "^2.1.1",
+    "mocha": "^2.3.3"
+  }
+}

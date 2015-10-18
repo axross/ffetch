@@ -1,1 +1,6 @@
-#ffetch
+# ffetch
+
+## Requirement
+
+- Promise
+- fetch
