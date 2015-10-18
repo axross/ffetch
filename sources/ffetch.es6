@@ -19,7 +19,7 @@ const AVAILABLE_METHODS = [
  * @param {string} method
  * @return {string} An upper-cased method.
  */
-const sanitizeMethod = method => {
+export const __sanitizeMethod = method => {
   const upperCased = String(method).toUpperCase();
 
   if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
@@ -39,7 +39,7 @@ const sanitizeMethod = method => {
  * @param {object} [query] `{ bar: 'bbb' }` will join to base, `base?bar=bbb`.
  * @return {string} A full URL.
  */
-export const createFullUrl = (base, param = {}, query = {}) => {
+export const __createFullUrl = (base, param = {}, query = {}) => {
   let url = base;
 
   if (Object.prototype.toString.call(param) !== '[object Object]') {
@@ -76,8 +76,8 @@ export const createFullUrl = (base, param = {}, query = {}) => {
  * fetch.get('/path/to/api/article/:id', { param: { id: 3 } });
  */
 export const ffetch = (url, options) => {
-  const method = sanitizeMethod(options.method);
-  const fullUrl = createFullUrl(url, options.param, options.query);
+  const method = __sanitizeMethod(options.method);
+  const fullUrl = __createFullUrl(url, options.param, options.query);
   let header = {};
   let body = options.body;
 
@@ -128,4 +128,4 @@ ffetch.opt = (url, options) => {
   return ffetch(url, Object.assign({}, options, { method: 'OPTIONS' }));
 };
 
-export default ffetch
+export default ffetch;
