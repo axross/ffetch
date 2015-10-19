@@ -19,7 +19,7 @@ const AVAILABLE_METHODS = [
  * @param {string} method
  * @return {string} An upper-cased method.
  */
-export const __sanitizeMethod = method => {
+const __sanitizeMethod = method => {
   const upperCased = String(method).toUpperCase();
 
   if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
