@@ -53,9 +53,7 @@ describe('__createFullUrl()', () => {
       });
     });
   });
-});
 
-describe('ffetch()', () => {
   it('__createFullUrl() is called when call ffetch()', () => {
     const cached = __util.__createFullUrl;
     const mock = (...args) => {
@@ -73,5 +71,69 @@ describe('ffetch()', () => {
     });
 
     __util.__createFullUrl = cached;
+  });
+});
+
+describe('ffetch()', () => {
+  describe('should stringify body and add a header when body is JSON', () => {
+    [
+      {
+        input: {
+          header: {
+            accept: 'text/html, text/plain, application/json',
+          },
+          body: {
+            foo: 'bar',
+            baz: 'quz',
+          },
+        },
+        output: {
+          header: {
+            accept: 'text/html, text/plain, application/json',
+            'content-type': 'application/json',
+          },
+          body: '{"foo":"bar","baz":"quz"}',
+        },
+      },
+      {
+        input: {
+          header: {},
+          body: ['foo', 'bar', 'buz'],
+        },
+        output: {
+          header: {
+            'content-type': 'application/json',
+          },
+          body: '["foo","bar","buz"]',
+        },
+      },
+      {
+        input: {},
+        output: {
+          header: {},
+          /* eslint-disable no-undefined */
+          body: undefined,
+          /* eslint-enable no-undefined */
+        },
+      },
+    ].forEach(({ input, output }, i) => {
+      it(`case ${i}`, () => {
+        const cached = global.fetch;
+        const mock = (url, options) => {
+          expect(options.header).to.eql(output.header);
+          expect(options.body).to.eql(output.body);
+        };
+
+        global.fetch = mock;
+
+        ffetch('/path/to/api', {
+          method: 'GET',
+          header: input.header,
+          body: input.body,
+        });
+
+        global.fetch = cached;
+      });
+    });
   });
 });
