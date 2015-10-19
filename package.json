@@ -1,13 +1,12 @@
 {
   "name": "ffetch",
   "version": "0.0.0",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
+  "main": "./distributions/ffetch.js",
   "scripts": {
+    "babel": "babel ./sources --out-dir ./distributions",
     "lint": "eslint ./sources/*.es6 ./tests/*.es6",
-    "test": "mocha -u bdd -R spec --compilers es6:babel/register -r ./tests/initialize.es6 ./tests/**/*.spec.es6"
+    "test": "mocha -u bdd -R spec --compilers es6:babel/register -r ./tests/initialize.es6 ./tests/**/*.spec.es6",
+    "prepublish": "npm run babel"
   },
   "repository": {
     "type": "git",
