@@ -2,7 +2,7 @@ import querystring from 'querystring';
 
 // get a global object
 /* eslint-disable no-new-func */
-const self = Function('return this');
+const self = Function('return this')();
 /* eslint-enable no-new-func */
 
 const AVAILABLE_METHODS = [
