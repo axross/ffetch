@@ -2,6 +2,7 @@
 
 Simple thin fetch wrapper.
 
+[![npm version](https://badge.fury.io/js/ffetch.svg)](http://badge.fury.io/js/ffetch)
 [![Circle CI](https://circleci.com/gh/axross/ffetch/tree/stable.svg?style=svg&circle-token=4ebcc03d8e89eec153012626ccb181ec2986ac64)](https://circleci.com/gh/axross/ffetch/tree/stable)
 [![Circle CI](https://circleci.com/gh/axross/ffetch/tree/master.svg?style=svg&circle-token=4ebcc03d8e89eec153012626ccb181ec2986ac64)](https://circleci.com/gh/axross/ffetch/tree/master)
 
@@ -73,11 +74,11 @@ ffetch.get('/path/to/api/page/:page', {
   .catch(err => console.error(err));
 ```
 
-|argument        |type  ||
-|:-------------- |:---- ||
-|`url`           |string|URL of request.|
-|`options.param` |object|URL parameters.|
-|`options.query` |object|URL queries.|
-|`options.header`|object|Request headers.|
+|argument        |type  |                                                      |
+|:-------------- |:---- |:---------------------------------------------------- |
+|`url`           |string|URL of request.                                       |
+|`options.param` |object|URL parameters.                                       |
+|`options.query` |object|URL queries.                                          |
+|`options.header`|object|Request headers.                                      |
 |`options.body`  |      |Request body. If it is an object or an array, It will be a string by `JSON.stringify()`.|
-|`options.***`   |      |Some other options.|
+|`options.***`   |      |Some other options.                                   |
