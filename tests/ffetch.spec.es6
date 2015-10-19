@@ -1,13 +1,12 @@
 /* eslint max-nested-callbacks: 0  */
 
-// URLのパース
 // ヘッダーのキーの小文字化
 // JSONのパース
 // ショートハンド
 
-import { __createFullUrl } from '../sources/ffetch';
+import { __util } from '../sources/ffetch';
 
-describe('createFullUrl()', () => {
+describe('__createFullUrl()', () => {
   describe('should generating a full url using base, param and query', () => {
     [
       {
@@ -50,7 +49,7 @@ describe('createFullUrl()', () => {
       },
     ].forEach(({ base, param, query, joined }, i) => {
       it(`case ${i}`, () => {
-        expect(__createFullUrl(base, param, query)).to.be(joined);
+        expect(__util.__createFullUrl(base, param, query)).to.be(joined);
       });
     });
   });
