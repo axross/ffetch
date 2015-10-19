@@ -4,7 +4,7 @@
 // JSONのパース
 // ショートハンド
 
-import { __util } from '../sources/ffetch';
+import { __util, ffetch } from '../sources/ffetch';
 
 describe('__createFullUrl()', () => {
   describe('should generating a full url using base, param and query', () => {
@@ -52,5 +52,26 @@ describe('__createFullUrl()', () => {
         expect(__util.__createFullUrl(base, param, query)).to.be(joined);
       });
     });
+  });
+});
+
+describe('ffetch()', () => {
+  it('__createFullUrl() is called when call ffetch()', () => {
+    const cached = __util.__createFullUrl;
+    const mock = (...args) => {
+      expect(args[0]).to.be('/path/to/api/article/:articleId');
+      expect(args[1]).to.eql({ articleId: 23 });
+      expect(args[2]).to.eql({ for_admin: 'true' });
+    };
+
+    __util.__createFullUrl = mock;
+
+    ffetch('/path/to/api/article/:articleId', {
+      method: 'GET',
+      param: { articleId: 23 },
+      query: { for_admin: 'true' },
+    });
+
+    __util.__createFullUrl = cached;
   });
 });
