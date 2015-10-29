@@ -1,6 +1,6 @@
 {
   "name": "ffetch",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./distributions/ffetch.js",
   "scripts": {
     "babel": "babel ./sources --out-dir ./distributions",
