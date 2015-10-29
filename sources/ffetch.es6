@@ -82,6 +82,12 @@ export const ffetch = (url, options) => {
   const fullUrl = __util.__createFullUrl(url, options.param, options.query);
   let header = {};
   let body = options.body;
+  let timeout = parseInt(options.timeout, 10);
+
+  // set default value if timeout is invalid
+  if (typeof timeout !== 'number' || Number.isNaN(timeout) || timeout <= 0) {
+    timeout = 60000;  // default 60sec
+  }
 
   // replace keys of header to lower case
   for (const key of Object.keys(options.header || {})) {
@@ -103,7 +109,19 @@ export const ffetch = (url, options) => {
     body,
   });
 
-  return self.fetch(fullUrl, parsedOptions);
+  return new Promise((resolve, reject) => {
+    const stid = setTimeout(() => {
+      reject(new Error('Session timeout'));
+    }, timeout);
+
+    self.fetch(fullUrl, parsedOptions)
+      .then(res => {
+        clearTimeout(stid);
+
+        resolve(res);
+      })
+      .catch(err => reject(err));
+  });
 };
 
 ffetch.get = (url, options) => {
