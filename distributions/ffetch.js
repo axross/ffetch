@@ -108,6 +108,12 @@ var ffetch = function ffetch(url, options) {
   var fullUrl = __util.__createFullUrl(url, options.param, options.query);
   var header = {};
   var body = options.body;
+  var timeout = parseInt(options.timeout, 10);
+
+  // set default value if timeout is invalid
+  if (typeof timeout !== 'number' || Number.isNaN(timeout) || timeout <= 0) {
+    timeout = 60000; // default 60sec
+  }
 
   // replace keys of header to lower case
   var _iteratorNormalCompletion2 = true;
@@ -150,7 +156,19 @@ var ffetch = function ffetch(url, options) {
     body: body
   });
 
-  return self.fetch(fullUrl, parsedOptions);
+  return new Promise(function (resolve, reject) {
+    var stid = setTimeout(function () {
+      reject(new Error('Session timeout'));
+    }, timeout);
+
+    self.fetch(fullUrl, parsedOptions).then(function (res) {
+      clearTimeout(stid);
+
+      resolve(res);
+    })['catch'](function (err) {
+      return reject(err);
+    });
+  });
 };
 
 exports.ffetch = ffetch;

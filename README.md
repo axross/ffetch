@@ -74,11 +74,12 @@ ffetch.get('/path/to/api/page/:page', {
   .catch(err => console.error(err));
 ```
 
-|argument        |type  |                                                      |
-|:-------------- |:---- |:---------------------------------------------------- |
-|`url`           |string|URL of request.                                       |
-|`options.param` |object|URL parameters.                                       |
-|`options.query` |object|URL queries.                                          |
-|`options.header`|object|Request headers.                                      |
-|`options.body`  |      |Request body. If it is an object or an array, It will be a string by `JSON.stringify()`.|
-|`options.***`   |      |Some other options.                                   |
+|argument         |type  |                                                     |
+|:--------------- |:---- |:--------------------------------------------------- |
+|`url`            |string|URL of request.                                      |
+|`options.param`  |object|URL parameters.                                      |
+|`options.query`  |object|URL queries.                                         |
+|`options.header` |object|Request headers.                                     |
+|`options.body`   |      |Request body. If it is an object or an array, It will be a string by `JSON.stringify()`.|
+|`options.timeout`|number|If request exceeded this value, `ffetch()` throws an error(promisified).|
+|`options.***`    |      |Some other options.                                  |

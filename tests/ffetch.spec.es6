@@ -117,11 +117,12 @@ describe('ffetch()', () => {
         },
       },
     ].forEach(({ input, output }, i) => {
-      it(`case ${i}`, () => {
+      it(`case ${i}`, done => {
         const cached = global.fetch;
         const mock = (url, options) => {
           expect(options.header).to.eql(output.header);
           expect(options.body).to.eql(output.body);
+          done();
         };
 
         global.fetch = mock;
@@ -134,6 +135,43 @@ describe('ffetch()', () => {
 
         global.fetch = cached;
       });
+    });
+  });
+
+  describe('should reject if timeout', () => {
+    it('when options.timeout is given', function(done) {
+      /* eslint-disable no-invalid-this */
+      this.timeout(6000);
+      /* eslint-enable no-invalid-this */
+
+      const start = Date.now();
+      const cached = global.fetch;
+      const mock = (url, options) => {
+        expect(options.timeout).to.be(5000);
+
+        return new Promise(resolve => {
+          setTimeout(resolve, 60000);
+        });
+      };
+
+      global.fetch = mock;
+
+      ffetch('/path/to/api', {
+        method: 'GET',
+        timeout: 5000,
+      })
+        .then(() => {
+          expect().fail('must not called');
+          done();
+        })
+        .catch(err => {
+          expect(err.message).to.be('Session timeout');
+          expect(Date.now() - start).to.greaterThan(4999);
+          expect(Date.now() - start).to.lessThan(6000);
+          done();
+        });
+
+      global.fetch = cached;
     });
   });
 });
