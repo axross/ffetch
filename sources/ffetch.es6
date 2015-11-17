@@ -33,23 +33,23 @@ export const __util = {
   },
 
   /**
-   * Create a full URL that parsed param and joined query.
+   * Create a full URL that parsed params and joined query.
    * @param {string} base
-   * @param {object} [param] `:foo` in `base` will parse to
+   * @param {object} [params] `:foo` in `base` will parse to
                              `aaa` with `{ foo: 'aaa' }`.
    * @param {object} [query] `{ bar: 'bbb' }` will join to base, `base?bar=bbb`.
    * @return {string} A full URL.
    */
-  __createFullUrl(base, param = {}, query = {}) {
+  __createFullUrl(base, params = {}, query = {}) {
     let url = base;
 
-    if (Object.prototype.toString.call(param) !== '[object Object]') {
-      throw new TypeError('param must be an object');
+    if (Object.prototype.toString.call(params) !== '[object Object]') {
+      throw new TypeError('params must be an object');
     }
 
-    for (const key of Object.keys(param)) {
+    for (const key of Object.keys(params)) {
       if (url.indexOf(`:${key}`) !== -1) {
-        url = url.replace(`:${key}`, param[key]);
+        url = url.replace(`:${key}`, params[key]);
       }
     }
 
@@ -66,20 +66,20 @@ export const __util = {
  * @param {string} url
  * @param {object} options
  * @param {string} options.method
- * @param {object} [options.param]
+ * @param {object} [options.params]
  * @param {object} [options.query]
  * @param {object} [options.header] Keys and values of HTTP request header.
  * @param {string|object} [options.body] A HTTP request body.
  * @return {Promise<Request, TypeError>}
  * @example
- * fetch('/path/to/api/article/:id', { method: 'GET', param: { id: 3 } });
+ * fetch('/path/to/api/article/:id', { method: 'GET', params: { id: 3 } });
  *
  * // short-hand (get, post, put, del, head, opt)
- * fetch.get('/path/to/api/article/:id', { param: { id: 3 } });
+ * fetch.get('/path/to/api/article/:id', { params: { id: 3 } });
  */
 export const ffetch = (url, options) => {
   const method = __util.__sanitizeMethod(options.method);
-  const fullUrl = __util.__createFullUrl(url, options.param, options.query);
+  const fullUrl = __util.__createFullUrl(url, options.params, options.query);
   let header = {};
   let body = options.body;
   let timeout = parseInt(options.timeout, 10);
