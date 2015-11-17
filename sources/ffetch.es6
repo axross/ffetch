@@ -13,6 +13,7 @@ const AVAILABLE_METHODS = [
   'HEAD',
   'OPTIONS',
 ];
+const DEFAULT_TIMEOUT_MILLISEC = 60000;
 
 export const __util = {
   /**
@@ -86,7 +87,7 @@ export const ffetch = (url, options) => {
 
   // set default value if timeout is invalid
   if (typeof timeout !== 'number' || Number.isNaN(timeout) || timeout <= 0) {
-    timeout = 60000;  // default 60sec
+    timeout = DEFAULT_TIMEOUT_MILLISEC;  // default 60sec
   }
 
   // replace keys of header to lower case
