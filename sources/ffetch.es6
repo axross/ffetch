@@ -33,14 +33,14 @@ export const __util = {
   },
 
   /**
-   * Create a full URL that parsed params and joined query.
+   * Create a full URL that parsed params and joined queries.
    * @param {string} base
    * @param {object} [params] `:foo` in `base` will parse to
                              `aaa` with `{ foo: 'aaa' }`.
-   * @param {object} [query] `{ bar: 'bbb' }` will join to base, `base?bar=bbb`.
+   * @param {object} [queries] `{ bar: 'bbb' }` will join to base, `base?bar=bbb`.
    * @return {string} A full URL.
    */
-  __createFullUrl(base, params = {}, query = {}) {
+  __createFullUrl(base, params = {}, queries = {}) {
     let url = base;
 
     if (Object.prototype.toString.call(params) !== '[object Object]') {
@@ -53,8 +53,8 @@ export const __util = {
       }
     }
 
-    if (Object.keys(query).length > 0) {
-      url = `${url}?${querystring.stringify(query)}`;
+    if (Object.keys(queries).length > 0) {
+      url = `${url}?${querystring.stringify(queries)}`;
     }
 
     return url;
@@ -67,7 +67,7 @@ export const __util = {
  * @param {object} options
  * @param {string} options.method
  * @param {object} [options.params]
- * @param {object} [options.query]
+ * @param {object} [options.queries]
  * @param {object} [options.header] Keys and values of HTTP request header.
  * @param {string|object} [options.body] A HTTP request body.
  * @return {Promise<Request, TypeError>}
@@ -79,7 +79,7 @@ export const __util = {
  */
 export const ffetch = (url, options) => {
   const method = __util.__sanitizeMethod(options.method);
-  const fullUrl = __util.__createFullUrl(url, options.params, options.query);
+  const fullUrl = __util.__createFullUrl(url, options.params, options.queries);
   let header = {};
   let body = options.body;
   let timeout = parseInt(options.timeout, 10);
