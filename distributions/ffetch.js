@@ -4,196 +4,227 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _isPlainObject = require('is-plain-object');
+
+var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
 var _querystring = require('querystring');
 
 var _querystring2 = _interopRequireDefault(_querystring);
 
-// get a global object
+// get the global object
 /* eslint-disable no-new-func */
 var self = Function('return this')();
 /* eslint-enable no-new-func */
 
 var AVAILABLE_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
+var DEFAULT_TIMEOUT_MILLISEC = 60000;
 
-var __util = {
-  /**
-   * Sanitizing a HTTP method.
-   * @param {string} method
-   * @return {string} An upper-cased method.
-   */
-  __sanitizeMethod: function __sanitizeMethod(method) {
-    var upperCased = String(method).toUpperCase();
+var FFetch = (function () {
+  function FFetch() {
+    _classCallCheck(this, FFetch);
+  }
 
-    if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
-      throw new TypeError('method must be a string of : ' + AVAILABLE_METHODS.join(', '));
+  _createClass(FFetch, [{
+    key: 'consturctor',
+    value: function consturctor(_ref) {
+      var _ref$baseUrl = _ref.baseUrl;
+      var baseUrl = _ref$baseUrl === undefined ? '' : _ref$baseUrl;
+      var _ref$headers = _ref.headers;
+      var headers = _ref$headers === undefined ? {} : _ref$headers;
+      var _ref$fetch = _ref.fetch;
+      var fetch = _ref$fetch === undefined ? self.fetch : _ref$fetch;
+
+      this.baseUrl = baseUrl;
+      this.defaultHeaderss = headers;
+      this.fetch = fetch;
     }
-
-    return upperCased;
-  },
-
-  /**
-   * Create a full URL that parsed param and joined query.
-   * @param {string} base
-   * @param {object} [param] `:foo` in `base` will parse to
-                             `aaa` with `{ foo: 'aaa' }`.
-   * @param {object} [query] `{ bar: 'bbb' }` will join to base, `base?bar=bbb`.
-   * @return {string} A full URL.
-   */
-  __createFullUrl: function __createFullUrl(base) {
-    var param = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-    var query = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-    var url = base;
-
-    if (Object.prototype.toString.call(param) !== '[object Object]') {
-      throw new TypeError('param must be an object');
+  }, {
+    key: 'get',
+    value: function get(url, options) {
+      return this.promisifiedFetch(url, Object.assign({}, options, {
+        method: 'GET'
+      }));
     }
+  }, {
+    key: 'post',
+    value: function post(url, options) {
+      return this.promisifiedFetch(url, Object.assign({}, options, {
+        method: 'POST'
+      }));
+    }
+  }, {
+    key: 'put',
+    value: function put(url, options) {
+      return this.promisifiedFetch(url, Object.assign({}, options, {
+        method: 'PUT'
+      }));
+    }
+  }, {
+    key: 'del',
+    value: function del(url, options) {
+      return this.promisifiedFetch(url, Object.assign({}, options, {
+        method: 'DELETE'
+      }));
+    }
+  }, {
+    key: 'head',
+    value: function head(url, options) {
+      return this.promisifiedFetch(url, Object.assign({}, options, {
+        method: 'HEAD'
+      }));
+    }
+  }, {
+    key: 'opt',
+    value: function opt(url, options) {
+      return this.promisifiedFetch(url, Object.assign({}, options, {
+        method: 'OPTIONS'
+      }));
+    }
+  }, {
+    key: 'promisifiedFetch',
+    value: function promisifiedFetch(url, options) {
+      var method = FFetch.sanitizeMethod(options.method);
+      var fullUrl = FFetch.createFullUrl(this.baseUrl + url, options.params, options.queries);
+      var timeout = parseInt(options.timeout, 10);
+      var headers = FFetch.lowercaseHeaderKeys(Object.assign({}, this.defaultHeaders, options.headers));
+      var body = options.body;
 
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = Object.keys(param)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var key = _step.value;
-
-        if (url.indexOf(':' + key) !== -1) {
-          url = url.replace(':' + key, param[key]);
-        }
+      // set default value if timeout is invalid
+      if (typeof timeout !== 'number' || Number.isNaN(timeout) || timeout <= 0) {
+        timeout = DEFAULT_TIMEOUT_MILLISEC;
       }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
+
+      // stringify body and add a headers if it is a plain object or an array
+      if ((0, _isPlainObject2['default'])(body) || Array.isArray(body)) {
+        body = JSON.stringify(body);
+        headers = Object.assign({
+          'content-type': 'application/json'
+        }, headers);
+      }
+
+      var parsedOptions = Object.assign({}, options, {
+        method: method,
+        headers: headers,
+        body: body
+      });
+
+      return new Promise(function (resolve, reject) {
+        var stid = setTimeout(function () {
+          reject(new Error('Session timeout'));
+        }, timeout);
+
+        self.fetch(fullUrl, parsedOptions).then(function (res) {
+          clearTimeout(stid);
+
+          resolve(res);
+        })['catch'](function (err) {
+          return reject(err);
+        });
+      });
+    }
+  }], [{
+    key: 'createFullUrl',
+    value: function createFullUrl(base) {
+      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+      var queries = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+      var url = base;
+
+      if (!(0, _isPlainObject2['default'])(params)) {
+        throw new TypeError('params must be an plain object');
+      }
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
       try {
-        if (!_iteratorNormalCompletion && _iterator['return']) {
-          _iterator['return']();
+        for (var _iterator = Object.keys(params)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var key = _step.value;
+
+          if (url.indexOf(':' + key) !== -1) {
+            url = url.replace(':' + key, params[key]);
+          }
         }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
       } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
+        try {
+          if (!_iteratorNormalCompletion && _iterator['return']) {
+            _iterator['return']();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
         }
       }
-    }
 
-    if (Object.keys(query).length > 0) {
-      url = url + '?' + _querystring2['default'].stringify(query);
-    }
-
-    return url;
-  }
-};
-
-exports.__util = __util;
-/**
- * Trying to fetch.
- * @param {string} url
- * @param {object} options
- * @param {string} options.method
- * @param {object} [options.param]
- * @param {object} [options.query]
- * @param {object} [options.header] Keys and values of HTTP request header.
- * @param {string|object} [options.body] A HTTP request body.
- * @return {Promise<Request, TypeError>}
- * @example
- * fetch('/path/to/api/article/:id', { method: 'GET', param: { id: 3 } });
- *
- * // short-hand (get, post, put, del, head, opt)
- * fetch.get('/path/to/api/article/:id', { param: { id: 3 } });
- */
-var ffetch = function ffetch(url, options) {
-  var method = __util.__sanitizeMethod(options.method);
-  var fullUrl = __util.__createFullUrl(url, options.param, options.query);
-  var header = {};
-  var body = options.body;
-  var timeout = parseInt(options.timeout, 10);
-
-  // set default value if timeout is invalid
-  if (typeof timeout !== 'number' || Number.isNaN(timeout) || timeout <= 0) {
-    timeout = 60000; // default 60sec
-  }
-
-  // replace keys of header to lower case
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
-
-  try {
-    for (var _iterator2 = Object.keys(options.header || {})[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var key = _step2.value;
-
-      header[key.toLowerCase()] = options.header[key];
-    }
-
-    // stringify body and add a header if it is a plain object or an array
-  } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-        _iterator2['return']();
+      if (Object.keys(queries).length > 0) {
+        url = url + '?' + _querystring2['default'].stringify(queries);
       }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
-      }
+
+      return url;
     }
-  }
+  }, {
+    key: 'sanitizeMethod',
+    value: function sanitizeMethod(method) {
+      var upperCased = String(method).toUpperCase();
 
-  if (Object.prototype.toString.call(body) === '[object Object]' || Object.prototype.toString.call(body) === '[object Array]') {
-    body = JSON.stringify(body);
-    header = Object.assign({
-      'content-type': 'application/json'
-    }, header);
-  }
+      if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
+        throw new TypeError('method must be a string of : ' + AVAILABLE_METHODS.join(', '));
+      }
 
-  var parsedOptions = Object.assign({}, options, {
-    method: method,
-    header: header,
-    body: body
-  });
+      return upperCased;
+    }
+  }, {
+    key: 'lowercaseHeaderKeys',
+    value: function lowercaseHeaderKeys(input) {
+      var output = {};
 
-  return new Promise(function (resolve, reject) {
-    var stid = setTimeout(function () {
-      reject(new Error('Session timeout'));
-    }, timeout);
+      // replace keys of headers to lower case
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
 
-    self.fetch(fullUrl, parsedOptions).then(function (res) {
-      clearTimeout(stid);
+      try {
+        for (var _iterator2 = input[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var key = _step2.value;
 
-      resolve(res);
-    })['catch'](function (err) {
-      return reject(err);
-    });
-  });
-};
+          output[key.toLowerCase()] = input[key];
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+            _iterator2['return']();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
 
-exports.ffetch = ffetch;
-ffetch.get = function (url, options) {
-  return ffetch(url, Object.assign({}, options, { method: 'GET' }));
-};
+      return output;
+    }
+  }]);
 
-ffetch.post = function (url, options) {
-  return ffetch(url, Object.assign({}, options, { method: 'POST' }));
-};
+  return FFetch;
+})();
 
-ffetch.put = function (url, options) {
-  return ffetch(url, Object.assign({}, options, { method: 'PUT' }));
-};
+exports.FFetch = FFetch;
 
-ffetch.del = function (url, options) {
-  return ffetch(url, Object.assign({}, options, { method: 'DELETE' }));
-};
+var plainInstance = new FFetch();
 
-ffetch.head = function (url, options) {
-  return ffetch(url, Object.assign({}, options, { method: 'HEAD' }));
-};
-
-ffetch.opt = function (url, options) {
-  return ffetch(url, Object.assign({}, options, { method: 'OPTIONS' }));
-};
-
-exports['default'] = ffetch;
+exports['default'] = plainInstance;

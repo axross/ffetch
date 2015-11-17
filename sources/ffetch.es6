@@ -1,6 +1,7 @@
+import isPlainObject from 'is-plain-object';
 import querystring from 'querystring';
 
-// get a global object
+// get the global object
 /* eslint-disable no-new-func */
 const self = Function('return this')();
 /* eslint-enable no-new-func */
@@ -15,37 +16,101 @@ const AVAILABLE_METHODS = [
 ];
 const DEFAULT_TIMEOUT_MILLISEC = 60000;
 
-export const __util = {
-  /**
-   * Sanitizing a HTTP method.
-   * @param {string} method
-   * @return {string} An upper-cased method.
-   */
-  __sanitizeMethod(method) {
-    const upperCased = String(method).toUpperCase();
+export class FFetch {
+  consturctor({ baseUrl = '', headers = {}, fetch = self.fetch }) {
+    this.baseUrl = baseUrl;
+    this.defaultHeaderss = headers;
+    this.fetch = fetch;
+  }
 
-    if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
-      throw new TypeError(
-        `method must be a string of : ${AVAILABLE_METHODS.join(', ')}`
-      );
+  get(url, options) {
+    return this.promisifiedFetch(url, Object.assign({}, options, {
+      method: 'GET',
+    }));
+  }
+
+  post(url, options) {
+    return this.promisifiedFetch(url, Object.assign({}, options, {
+      method: 'POST',
+    }));
+  }
+
+  put(url, options) {
+    return this.promisifiedFetch(url, Object.assign({}, options, {
+      method: 'PUT',
+    }));
+  }
+
+  del(url, options) {
+    return this.promisifiedFetch(url, Object.assign({}, options, {
+      method: 'DELETE',
+    }));
+  }
+
+  head(url, options) {
+    return this.promisifiedFetch(url, Object.assign({}, options, {
+      method: 'HEAD',
+    }));
+  }
+
+  opt(url, options) {
+    return this.promisifiedFetch(url, Object.assign({}, options, {
+      method: 'OPTIONS',
+    }));
+  }
+
+  promisifiedFetch(url, options) {
+    const method = FFetch.sanitizeMethod(options.method);
+    const fullUrl = FFetch.createFullUrl(
+      this.baseUrl + url,
+      options.params,
+      options.queries
+    );
+    let timeout = parseInt(options.timeout, 10);
+    let headers = FFetch.lowercaseHeaderKeys(
+      Object.assign({}, this.defaultHeaders, options.headers)
+    );
+    let body = options.body;
+
+    // set default value if timeout is invalid
+    if (typeof timeout !== 'number' || Number.isNaN(timeout) || timeout <= 0) {
+      timeout = DEFAULT_TIMEOUT_MILLISEC;
     }
 
-    return upperCased;
-  },
+    // stringify body and add a headers if it is a plain object or an array
+    if (isPlainObject(body) || Array.isArray(body)) {
+      body = JSON.stringify(body);
+      headers = Object.assign({
+        'content-type': 'application/json',
+      }, headers);
+    }
 
-  /**
-   * Create a full URL that parsed params and joined queries.
-   * @param {string} base
-   * @param {object} [params] `:foo` in `base` will parse to
-                             `aaa` with `{ foo: 'aaa' }`.
-   * @param {object} [queries] `{ bar: 'bbb' }` will join to base, `base?bar=bbb`.
-   * @return {string} A full URL.
-   */
-  __createFullUrl(base, params = {}, queries = {}) {
+    const parsedOptions = Object.assign({}, options, {
+      method,
+      headers,
+      body,
+    });
+
+    return new Promise((resolve, reject) => {
+      const stid = setTimeout(() => {
+        reject(new Error('Session timeout'));
+      }, timeout);
+
+      self.fetch(fullUrl, parsedOptions)
+        .then(res => {
+          clearTimeout(stid);
+
+          resolve(res);
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  static createFullUrl(base, params = {}, queries = {}) {
     let url = base;
 
-    if (Object.prototype.toString.call(params) !== '[object Object]') {
-      throw new TypeError('params must be an object');
+    if (!isPlainObject(params)) {
+      throw new TypeError('params must be an plain object');
     }
 
     for (const key of Object.keys(params)) {
@@ -59,94 +124,32 @@ export const __util = {
     }
 
     return url;
-  },
-};
-
-/**
- * Trying to fetch.
- * @param {string} url
- * @param {object} options
- * @param {string} options.method
- * @param {object} [options.params]
- * @param {object} [options.queries]
- * @param {object} [options.headers] Keys and values of HTTP request headers.
- * @param {string|object} [options.body] A HTTP request body.
- * @return {Promise<Request, TypeError>}
- * @example
- * fetch('/path/to/api/article/:id', { method: 'GET', params: { id: 3 } });
- *
- * // short-hand (get, post, put, del, head, opt)
- * fetch.get('/path/to/api/article/:id', { params: { id: 3 } });
- */
-export const ffetch = (url, options) => {
-  const method = __util.__sanitizeMethod(options.method);
-  const fullUrl = __util.__createFullUrl(url, options.params, options.queries);
-  let headers = {};
-  let body = options.body;
-  let timeout = parseInt(options.timeout, 10);
-
-  // set default value if timeout is invalid
-  if (typeof timeout !== 'number' || Number.isNaN(timeout) || timeout <= 0) {
-    timeout = DEFAULT_TIMEOUT_MILLISEC;  // default 60sec
   }
 
-  // replace keys of header to lower case
-  for (const key of Object.keys(options.headers || {})) {
-    headers[key.toLowerCase()] = options.headers[key];
+  static sanitizeMethod(method) {
+    const upperCased = String(method).toUpperCase();
+
+    if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
+      throw new TypeError(
+        `method must be a string of : ${AVAILABLE_METHODS.join(', ')}`
+      );
+    }
+
+    return upperCased;
   }
 
-  // stringify body and add a header if it is a plain object or an array
-  if (Object.prototype.toString.call(body) === '[object Object]' ||
-      Object.prototype.toString.call(body) === '[object Array]') {
-    body = JSON.stringify(body);
-    headers = Object.assign({
-      'content-type': 'application/json',
-    }, headers);
+  static lowercaseHeaderKeys(input) {
+    const output = {};
+
+    // replace keys of headers to lower case
+    for (const key of input) {
+      output[key.toLowerCase()] = input[key];
+    }
+
+    return output;
   }
+}
 
-  const parsedOptions = Object.assign({}, options, {
-    method,
-    headers,
-    body,
-  });
+const plainInstance = new FFetch();
 
-  return new Promise((resolve, reject) => {
-    const stid = setTimeout(() => {
-      reject(new Error('Session timeout'));
-    }, timeout);
-
-    self.fetch(fullUrl, parsedOptions)
-      .then(res => {
-        clearTimeout(stid);
-
-        resolve(res);
-      })
-      .catch(err => reject(err));
-  });
-};
-
-ffetch.get = (url, options) => {
-  return ffetch(url, Object.assign({}, options, { method: 'GET' }));
-};
-
-ffetch.post = (url, options) => {
-  return ffetch(url, Object.assign({}, options, { method: 'POST' }));
-};
-
-ffetch.put = (url, options) => {
-  return ffetch(url, Object.assign({}, options, { method: 'PUT' }));
-};
-
-ffetch.del = (url, options) => {
-  return ffetch(url, Object.assign({}, options, { method: 'DELETE' }));
-};
-
-ffetch.head = (url, options) => {
-  return ffetch(url, Object.assign({}, options, { method: 'HEAD' }));
-};
-
-ffetch.opt = (url, options) => {
-  return ffetch(url, Object.assign({}, options, { method: 'OPTIONS' }));
-};
-
-export default ffetch;
+export default plainInstance;
