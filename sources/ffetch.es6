@@ -68,7 +68,7 @@ export const __util = {
  * @param {string} options.method
  * @param {object} [options.params]
  * @param {object} [options.queries]
- * @param {object} [options.header] Keys and values of HTTP request header.
+ * @param {object} [options.headers] Keys and values of HTTP request headers.
  * @param {string|object} [options.body] A HTTP request body.
  * @return {Promise<Request, TypeError>}
  * @example
@@ -80,7 +80,7 @@ export const __util = {
 export const ffetch = (url, options) => {
   const method = __util.__sanitizeMethod(options.method);
   const fullUrl = __util.__createFullUrl(url, options.params, options.queries);
-  let header = {};
+  let headers = {};
   let body = options.body;
   let timeout = parseInt(options.timeout, 10);
 
@@ -90,22 +90,22 @@ export const ffetch = (url, options) => {
   }
 
   // replace keys of header to lower case
-  for (const key of Object.keys(options.header || {})) {
-    header[key.toLowerCase()] = options.header[key];
+  for (const key of Object.keys(options.headers || {})) {
+    headers[key.toLowerCase()] = options.headers[key];
   }
 
   // stringify body and add a header if it is a plain object or an array
   if (Object.prototype.toString.call(body) === '[object Object]' ||
       Object.prototype.toString.call(body) === '[object Array]') {
     body = JSON.stringify(body);
-    header = Object.assign({
+    headers = Object.assign({
       'content-type': 'application/json',
-    }, header);
+    }, headers);
   }
 
   const parsedOptions = Object.assign({}, options, {
     method,
-    header,
+    headers,
     body,
   });
 

@@ -75,11 +75,11 @@ describe('__createFullUrl()', () => {
 });
 
 describe('ffetch()', () => {
-  describe('should stringify body and add a header when body is JSON', () => {
+  describe('should stringify body and add a headers when body is JSON', () => {
     [
       {
         input: {
-          header: {
+          headers: {
             accept: 'text/html, text/plain, application/json',
           },
           body: {
@@ -88,7 +88,7 @@ describe('ffetch()', () => {
           },
         },
         output: {
-          header: {
+          headers: {
             accept: 'text/html, text/plain, application/json',
             'content-type': 'application/json',
           },
@@ -97,11 +97,11 @@ describe('ffetch()', () => {
       },
       {
         input: {
-          header: {},
+          headers: {},
           body: ['foo', 'bar', 'buz'],
         },
         output: {
-          header: {
+          headers: {
             'content-type': 'application/json',
           },
           body: '["foo","bar","buz"]',
@@ -110,7 +110,7 @@ describe('ffetch()', () => {
       {
         input: {},
         output: {
-          header: {},
+          headers: {},
           /* eslint-disable no-undefined */
           body: undefined,
           /* eslint-enable no-undefined */
@@ -120,7 +120,7 @@ describe('ffetch()', () => {
       it(`case ${i}`, done => {
         const cached = global.fetch;
         const mock = (url, options) => {
-          expect(options.header).to.eql(output.header);
+          expect(options.headers).to.eql(output.headers);
           expect(options.body).to.eql(output.body);
           done();
         };
@@ -129,7 +129,7 @@ describe('ffetch()', () => {
 
         ffetch('/path/to/api', {
           method: 'GET',
-          header: input.header,
+          headers: input.headers,
           body: input.body,
         });
 
