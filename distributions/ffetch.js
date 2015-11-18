@@ -28,72 +28,78 @@ var DEFAULT_TIMEOUT_MILLISEC = 60000;
 
 var FFetch = (function () {
   function FFetch() {
+    var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    var _ref$baseUrl = _ref.baseUrl;
+    var baseUrl = _ref$baseUrl === undefined ? '' : _ref$baseUrl;
+    var _ref$headers = _ref.headers;
+    var headers = _ref$headers === undefined ? {} : _ref$headers;
+    var _ref$timeout = _ref.timeout;
+    var timeout = _ref$timeout === undefined ? DEFAULT_TIMEOUT_MILLISEC : _ref$timeout;
+    var _ref$fetch = _ref.fetch;
+    var fetch = _ref$fetch === undefined ? self.fetch : _ref$fetch;
+
     _classCallCheck(this, FFetch);
+
+    this.baseUrl = baseUrl;
+    this.defaultHeaders = headers;
+    this.defaultTimeout = timeout;
+    this.fetch = fetch;
   }
 
   _createClass(FFetch, [{
-    key: 'consturctor',
-    value: function consturctor() {
-      var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var _ref$baseUrl = _ref.baseUrl;
-      var baseUrl = _ref$baseUrl === undefined ? '' : _ref$baseUrl;
-      var _ref$headers = _ref.headers;
-      var headers = _ref$headers === undefined ? {} : _ref$headers;
-      var _ref$fetch = _ref.fetch;
-      var fetch = _ref$fetch === undefined ? self.fetch : _ref$fetch;
-
-      this.baseUrl = baseUrl;
-      this.defaultHeaderss = headers;
-      this.fetch = fetch;
-    }
-  }, {
     key: 'get',
     value: function get(url, options) {
-      return this.promisifiedFetch(url, Object.assign({}, options, {
+      return this.friendlyFetch(url, Object.assign({}, options, {
         method: 'GET'
       }));
     }
   }, {
     key: 'post',
     value: function post(url, options) {
-      return this.promisifiedFetch(url, Object.assign({}, options, {
+      return this.friendlyFetch(url, Object.assign({}, options, {
         method: 'POST'
       }));
     }
   }, {
     key: 'put',
     value: function put(url, options) {
-      return this.promisifiedFetch(url, Object.assign({}, options, {
+      return this.friendlyFetch(url, Object.assign({}, options, {
         method: 'PUT'
       }));
     }
   }, {
     key: 'del',
     value: function del(url, options) {
-      return this.promisifiedFetch(url, Object.assign({}, options, {
+      return this.friendlyFetch(url, Object.assign({}, options, {
         method: 'DELETE'
       }));
     }
   }, {
     key: 'head',
     value: function head(url, options) {
-      return this.promisifiedFetch(url, Object.assign({}, options, {
+      return this.friendlyFetch(url, Object.assign({}, options, {
         method: 'HEAD'
       }));
     }
   }, {
     key: 'opt',
     value: function opt(url, options) {
-      return this.promisifiedFetch(url, Object.assign({}, options, {
+      return this.friendlyFetch(url, Object.assign({}, options, {
         method: 'OPTIONS'
       }));
     }
   }, {
-    key: 'promisifiedFetch',
-    value: function promisifiedFetch(url, options) {
+    key: 'friendlyFetch',
+    value: function friendlyFetch(url, options) {
+      var _this = this;
+
       var method = FFetch.sanitizeMethod(options.method);
-      var fullUrl = FFetch.createFullUrl(this.baseUrl + url, options.params, options.queries);
+      var fullUrl = FFetch.createFullUrl({
+        base: this.baseUrl + url,
+        params: options.params,
+        queries: options.queries
+      });
       var timeout = parseInt(options.timeout, 10);
       var headers = FFetch.lowercaseHeaderKeys(Object.assign({}, this.defaultHeaders, options.headers));
       var body = options.body;
@@ -122,16 +128,31 @@ var FFetch = (function () {
           reject(new Error('Session timeout'));
         }, timeout);
 
-        self.fetch(fullUrl, parsedOptions).then(function (res) {
+        _this.fetch(fullUrl, parsedOptions).then(function (res) {
           clearTimeout(stid);
 
           resolve(res);
         })['catch'](function (err) {
-          return reject(err);
+          clearTimeout(stid);
+
+          reject(err);
         });
       });
     }
   }], [{
+    key: 'sanitizeMethod',
+    value: function sanitizeMethod(method) {
+      if (!method) throw new TypeError('method is not given');
+
+      var upperCased = String(method).toUpperCase();
+
+      if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
+        throw new TypeError('method must be a string of : ' + AVAILABLE_METHODS.join(', '));
+      }
+
+      return upperCased;
+    }
+  }, {
     key: 'createFullUrl',
     value: function createFullUrl() {
       var _ref2 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -146,7 +167,7 @@ var FFetch = (function () {
       var url = base;
 
       if (!(0, _isPlainObject2['default'])(params)) {
-        throw new TypeError('A params is not a Plain-object');
+        throw new TypeError('params is not a Plain-object');
       }
 
       var _iteratorNormalCompletion = true;
@@ -158,7 +179,7 @@ var FFetch = (function () {
           var key = _step.value;
 
           if (String(params[key]).startsWith(':')) {
-            throw new TypeError('A params.' + key + ' is invalid String. it must not start with ":".');
+            throw new TypeError('params.' + key + ' is invalid String. it must not start with ":".');
           }
 
           while (url.indexOf(':' + key) !== -1) {
@@ -187,17 +208,6 @@ var FFetch = (function () {
       return url;
     }
   }, {
-    key: 'sanitizeMethod',
-    value: function sanitizeMethod(method) {
-      var upperCased = String(method).toUpperCase();
-
-      if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
-        throw new TypeError('A method must be a string of : ' + AVAILABLE_METHODS.join(', '));
-      }
-
-      return upperCased;
-    }
-  }, {
     key: 'lowercaseHeaderKeys',
     value: function lowercaseHeaderKeys(input) {
       var output = {};
@@ -208,7 +218,7 @@ var FFetch = (function () {
       var _iteratorError2 = undefined;
 
       try {
-        for (var _iterator2 = input[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        for (var _iterator2 = Object.keys(input)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
           var key = _step2.value;
 
           output[key.toLowerCase()] = input[key];
