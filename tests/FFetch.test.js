@@ -329,3 +329,153 @@ test('FFetch#friendlyFetch() resolves url, method, params, queries, headers and 
       t.ok(true, 'should be called');
     });
 });
+
+test('FFetch#get() is just a shorthand to FFetch#friendlyFetch()', t => {
+  t.plan(3);
+
+  const cachedFriendlyFetch = FFetch.prototype.friendlyFetch;
+
+  FFetch.prototype.friendlyFetch = function(url, options) {
+    t.equal(url, '/path/to/api');
+    t.deepEqual(options, {
+      method: 'GET',
+      body: 'body',
+    });
+
+    return cachedFriendlyFetch.call(this, url, options)
+      .then(() => t.ok(true, 'should be called'));
+  };
+
+  const ff = new FFetch({
+    fetch: () => Promise.resolve(),
+  });
+
+  ff.get('/path/to/api', { body: 'body' });
+
+  FFetch.prototype.friendlyFetch = cachedFriendlyFetch;
+});
+
+test('FFetch#post() is just a shorthand to FFetch#friendlyFetch()', t => {
+  t.plan(3);
+
+  const cachedFriendlyFetch = FFetch.prototype.friendlyFetch;
+
+  FFetch.prototype.friendlyFetch = function(url, options) {
+    t.equal(url, '/path/to/api');
+    t.deepEqual(options, {
+      method: 'POST',
+      body: 'body',
+    });
+
+    return cachedFriendlyFetch.call(this, url, options)
+      .then(() => t.ok(true, 'should be called'));
+  };
+
+  const ff = new FFetch({
+    fetch: () => Promise.resolve(),
+  });
+
+  ff.post('/path/to/api', { body: 'body' });
+
+  FFetch.prototype.friendlyFetch = cachedFriendlyFetch;
+});
+
+test('FFetch#put() is just a shorthand to FFetch#friendlyFetch()', t => {
+  t.plan(3);
+
+  const cachedFriendlyFetch = FFetch.prototype.friendlyFetch;
+
+  FFetch.prototype.friendlyFetch = function(url, options) {
+    t.equal(url, '/path/to/api');
+    t.deepEqual(options, {
+      method: 'PUT',
+      body: 'body',
+    });
+
+    return cachedFriendlyFetch.call(this, url, options)
+      .then(() => t.ok(true, 'should be called'));
+  };
+
+  const ff = new FFetch({
+    fetch: () => Promise.resolve(),
+  });
+
+  ff.put('/path/to/api', { body: 'body' });
+
+  FFetch.prototype.friendlyFetch = cachedFriendlyFetch;
+});
+
+test('FFetch#del() is just a shorthand to FFetch#friendlyFetch()', t => {
+  t.plan(3);
+
+  const cachedFriendlyFetch = FFetch.prototype.friendlyFetch;
+
+  FFetch.prototype.friendlyFetch = function(url, options) {
+    t.equal(url, '/path/to/api');
+    t.deepEqual(options, {
+      method: 'DELETE',
+      body: 'body',
+    });
+
+    return cachedFriendlyFetch.call(this, url, options)
+      .then(() => t.ok(true, 'should be called'));
+  };
+
+  const ff = new FFetch({
+    fetch: () => Promise.resolve(),
+  });
+
+  ff.del('/path/to/api', { body: 'body' });
+
+  FFetch.prototype.friendlyFetch = cachedFriendlyFetch;
+});
+
+test('FFetch#head() is just a shorthand to FFetch#friendlyFetch()', t => {
+  t.plan(3);
+
+  const cachedFriendlyFetch = FFetch.prototype.friendlyFetch;
+
+  FFetch.prototype.friendlyFetch = function(url, options) {
+    t.equal(url, '/path/to/api');
+    t.deepEqual(options, {
+      method: 'HEAD',
+      body: 'body',
+    });
+
+    return cachedFriendlyFetch.call(this, url, options)
+      .then(() => t.ok(true, 'should be called'));
+  };
+
+  const ff = new FFetch({
+    fetch: () => Promise.resolve(),
+  });
+
+  ff.head('/path/to/api', { body: 'body' });
+
+  FFetch.prototype.friendlyFetch = cachedFriendlyFetch;
+});
+
+test('FFetch#opt() is just a shorthand to FFetch#friendlyFetch()', t => {
+  t.plan(3);
+
+  const cachedFriendlyFetch = FFetch.prototype.friendlyFetch;
+
+  FFetch.prototype.friendlyFetch = function(url, options) {
+    t.equal(url, '/path/to/api');
+    t.deepEqual(options, {
+      method: 'OPTIONS',
+      body: 'body',
+    });
+
+    return cachedFriendlyFetch.call(this, url, options)
+      .then(() => t.ok(true, 'should be called'));
+  };
+
+  const ff = new FFetch({
+    fetch: () => Promise.resolve(),
+  });
+
+  ff.opt('/path/to/api', { body: 'body' });
+
+  FFetch.prototype.friendlyFetch = cachedFriendlyFetch;
+});

@@ -111,6 +111,20 @@ export class FFetch {
     });
   }
 
+  static sanitizeMethod(method) {
+    if (!method) throw new TypeError('method is not given');
+
+    const upperCased = String(method).toUpperCase();
+
+    if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
+      throw new TypeError(
+        `method must be a string of : ${AVAILABLE_METHODS.join(', ')}`
+      );
+    }
+
+    return upperCased;
+  }
+
   static createFullUrl({ base = '', params = {}, queries = {} } = {}) {
     let url = base;
 
@@ -133,20 +147,6 @@ export class FFetch {
     }
 
     return url;
-  }
-
-  static sanitizeMethod(method) {
-    if (!method) throw new TypeError('method is not given');
-
-    const upperCased = String(method).toUpperCase();
-
-    if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
-      throw new TypeError(
-        `method must be a string of : ${AVAILABLE_METHODS.join(', ')}`
-      );
-    }
-
-    return upperCased;
   }
 
   static lowercaseHeaderKeys(input) {
