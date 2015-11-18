@@ -170,7 +170,7 @@ test('FFetch.lowercaseHeaderKeys()', t => {
 });
 
 test('An instance of FFetch includes members baseUrl, defaultHeaders and fetch from the first argument', t => {
-  t.plan(3);
+  t.plan(8);
 
   const options = {
     baseUrl: 'http://base.url',
@@ -178,11 +178,67 @@ test('An instance of FFetch includes members baseUrl, defaultHeaders and fetch f
       'x-auth-token': '123456789abcdef0',
     },
     fetch: () => {},
+    timeout: 30000,
   };
 
   const ff = new FFetch(options);
 
   t.equal(ff.baseUrl, options.baseUrl);
   t.equal(ff.defaultHeaders, options.headers);
+  t.equal(ff.timeout, options.defaultTimeout);
   t.equal(ff.fetch, options.fetch);
+
+  const ffNotReceiveAnyOptions = new FFetch();
+
+  t.equal(ffNotReceiveAnyOptions.baseUrl, '');
+  t.deepEqual(ffNotReceiveAnyOptions.defaultHeaders, {});
+  t.ok(
+    ffNotReceiveAnyOptions.defaultTimeout > 0,
+    'should greater than 0'
+  );
+  t.equal(ffNotReceiveAnyOptions.fetch, global.fetch);
+});
+
+test('FFetch#friendlyFetch() calls this.fetch and returns Promise<Response> it handles this.fetch()', t => {
+  t.plan(2);
+
+  const ff = new FFetch({
+    fetch: () => Promise.resolve('response'),
+  });
+
+  ff.friendlyFetch('/path/to/api', { method: 'GET' })
+    .then(res => t.equal(res, 'response'))
+    .catch(() => t.fail('should not be called'));
+
+  const maybeFailFF = new FFetch({
+    fetch: () => Promise.reject(new Error()),
+  });
+
+  maybeFailFF.friendlyFetch('/path/to/api', { method: 'POST' })
+    .then(() => t.fail('should not be called'))
+    .catch(err => t.ok(err instanceof Error, 'should be an Error'));
+});
+
+test('FFetch#friendlyFetch() reject the Promise when time passes than timeout', t => {
+  t.plan(2);
+
+  let timeoutIdOfFF = null;
+
+  const ff = new FFetch({
+    fetch: () => new Promise(resolve => {
+      timeoutIdOfFF = setTimeout(() => resolve(), 1001);
+    }),
+  });
+
+  ff.friendlyFetch('/path/to/api', {
+    method: 'GET',
+    timeout: 1000,
+  })
+    .then(() => t.fail('should not be called'))
+    .catch(err => {
+      t.ok(err instanceof Error, 'should be an Error');
+      t.equal(err.message, 'Session timeout');
+
+      clearTimeout(timeoutIdOfFF);
+    });
 });

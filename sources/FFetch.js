@@ -17,49 +17,50 @@ const AVAILABLE_METHODS = [
 const DEFAULT_TIMEOUT_MILLISEC = 60000;
 
 export class FFetch {
-  constructor({ baseUrl = '', headers = {}, fetch = self.fetch } = {}) {
+  constructor({ baseUrl = '', headers = {}, timeout = DEFAULT_TIMEOUT_MILLISEC, fetch = self.fetch } = {}) {
     this.baseUrl = baseUrl;
     this.defaultHeaders = headers;
+    this.defaultTimeout = timeout;
     this.fetch = fetch;
   }
 
   get(url, options) {
-    return this.promisifiedFetch(url, Object.assign({}, options, {
+    return this.friendlyFetch(url, Object.assign({}, options, {
       method: 'GET',
     }));
   }
 
   post(url, options) {
-    return this.promisifiedFetch(url, Object.assign({}, options, {
+    return this.friendlyFetch(url, Object.assign({}, options, {
       method: 'POST',
     }));
   }
 
   put(url, options) {
-    return this.promisifiedFetch(url, Object.assign({}, options, {
+    return this.friendlyFetch(url, Object.assign({}, options, {
       method: 'PUT',
     }));
   }
 
   del(url, options) {
-    return this.promisifiedFetch(url, Object.assign({}, options, {
+    return this.friendlyFetch(url, Object.assign({}, options, {
       method: 'DELETE',
     }));
   }
 
   head(url, options) {
-    return this.promisifiedFetch(url, Object.assign({}, options, {
+    return this.friendlyFetch(url, Object.assign({}, options, {
       method: 'HEAD',
     }));
   }
 
   opt(url, options) {
-    return this.promisifiedFetch(url, Object.assign({}, options, {
+    return this.friendlyFetch(url, Object.assign({}, options, {
       method: 'OPTIONS',
     }));
   }
 
-  promisifiedFetch(url, options) {
+  friendlyFetch(url, options) {
     const method = FFetch.sanitizeMethod(options.method);
     const fullUrl = FFetch.createFullUrl(
       this.baseUrl + url,
@@ -102,7 +103,11 @@ export class FFetch {
 
           resolve(res);
         })
-        .catch(err => reject(err));
+        .catch(err => {
+          clearTimeout(stid);
+
+          reject(err);
+        });
     });
   }
 
