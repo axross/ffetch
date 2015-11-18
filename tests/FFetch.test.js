@@ -479,3 +479,10 @@ test('FFetch#opt() is just a shorthand to FFetch#friendlyFetch()', t => {
 
   FFetch.prototype.friendlyFetch = cachedFriendlyFetch;
 });
+
+test('ffetch is just a plain instance of FFetch', t => {
+  t.plan(2);
+
+  t.ok(ffetch instanceof FFetch, 'should be just an instance');
+  t.deepEqual(ffetch, new FFetch());
+});
