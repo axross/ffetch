@@ -168,3 +168,21 @@ test('FFetch.lowercaseHeaderKeys()', t => {
     camelcase: 'Will be lowercased',
   });
 });
+
+test('An instance of FFetch includes members baseUrl, defaultHeaders and fetch from the first argument', t => {
+  t.plan(3);
+
+  const options = {
+    baseUrl: 'http://base.url',
+    headers: {
+      'x-auth-token': '123456789abcdef0',
+    },
+    fetch: () => {},
+  };
+
+  const ff = new FFetch(options);
+
+  t.equal(ff.baseUrl, options.baseUrl);
+  t.equal(ff.defaultHeaders, options.headers);
+  t.equal(ff.fetch, options.fetch);
+});

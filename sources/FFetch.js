@@ -17,9 +17,9 @@ const AVAILABLE_METHODS = [
 const DEFAULT_TIMEOUT_MILLISEC = 60000;
 
 export class FFetch {
-  consturctor({ baseUrl = '', headers = {}, fetch = self.fetch } = {}) {
+  constructor({ baseUrl = '', headers = {}, fetch = self.fetch } = {}) {
     this.baseUrl = baseUrl;
-    this.defaultHeaderss = headers;
+    this.defaultHeaders = headers;
     this.fetch = fetch;
   }
 
@@ -96,7 +96,7 @@ export class FFetch {
         reject(new Error('Session timeout'));
       }, timeout);
 
-      self.fetch(fullUrl, parsedOptions)
+      this.fetch(fullUrl, parsedOptions)
         .then(res => {
           clearTimeout(stid);
 
