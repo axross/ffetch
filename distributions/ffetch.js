@@ -33,7 +33,9 @@ var FFetch = (function () {
 
   _createClass(FFetch, [{
     key: 'consturctor',
-    value: function consturctor(_ref) {
+    value: function consturctor() {
+      var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
       var _ref$baseUrl = _ref.baseUrl;
       var baseUrl = _ref$baseUrl === undefined ? '' : _ref$baseUrl;
       var _ref$headers = _ref.headers;
@@ -131,14 +133,20 @@ var FFetch = (function () {
     }
   }], [{
     key: 'createFullUrl',
-    value: function createFullUrl(base) {
-      var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-      var queries = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+    value: function createFullUrl() {
+      var _ref2 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref2$base = _ref2.base;
+      var base = _ref2$base === undefined ? '' : _ref2$base;
+      var _ref2$params = _ref2.params;
+      var params = _ref2$params === undefined ? {} : _ref2$params;
+      var _ref2$queries = _ref2.queries;
+      var queries = _ref2$queries === undefined ? {} : _ref2$queries;
 
       var url = base;
 
       if (!(0, _isPlainObject2['default'])(params)) {
-        throw new TypeError('params must be an plain object');
+        throw new TypeError('A params is not a Plain-object');
       }
 
       var _iteratorNormalCompletion = true;
@@ -149,7 +157,11 @@ var FFetch = (function () {
         for (var _iterator = Object.keys(params)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var key = _step.value;
 
-          if (url.indexOf(':' + key) !== -1) {
+          if (String(params[key]).startsWith(':')) {
+            throw new TypeError('A params.' + key + ' is invalid String. it must not start with ":".');
+          }
+
+          while (url.indexOf(':' + key) !== -1) {
             url = url.replace(':' + key, params[key]);
           }
         }
@@ -180,7 +192,7 @@ var FFetch = (function () {
       var upperCased = String(method).toUpperCase();
 
       if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
-        throw new TypeError('method must be a string of : ' + AVAILABLE_METHODS.join(', '));
+        throw new TypeError('A method must be a string of : ' + AVAILABLE_METHODS.join(', '));
       }
 
       return upperCased;
@@ -224,7 +236,3 @@ var FFetch = (function () {
 })();
 
 exports.FFetch = FFetch;
-
-var plainInstance = new FFetch();
-
-exports['default'] = plainInstance;

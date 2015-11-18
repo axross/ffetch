@@ -17,7 +17,7 @@ const AVAILABLE_METHODS = [
 const DEFAULT_TIMEOUT_MILLISEC = 60000;
 
 export class FFetch {
-  consturctor({ baseUrl = '', headers = {}, fetch = self.fetch }) {
+  consturctor({ baseUrl = '', headers = {}, fetch = self.fetch } = {}) {
     this.baseUrl = baseUrl;
     this.defaultHeaderss = headers;
     this.fetch = fetch;
@@ -106,15 +106,19 @@ export class FFetch {
     });
   }
 
-  static createFullUrl(base, params = {}, queries = {}) {
+  static createFullUrl({ base = '', params = {}, queries = {} } = {}) {
     let url = base;
 
     if (!isPlainObject(params)) {
-      throw new TypeError('params must be an plain object');
+      throw new TypeError('params is not a Plain-object');
     }
 
     for (const key of Object.keys(params)) {
-      if (url.indexOf(`:${key}`) !== -1) {
+      if (String(params[key]).startsWith(':')) {
+        throw new TypeError(`params.${key} is invalid String. it must not start with ":".`);
+      }
+
+      while (url.indexOf(`:${key}`) !== -1) {
         url = url.replace(`:${key}`, params[key]);
       }
     }
@@ -149,7 +153,3 @@ export class FFetch {
     return output;
   }
 }
-
-const plainInstance = new FFetch();
-
-export default plainInstance;
