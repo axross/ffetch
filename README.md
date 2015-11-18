@@ -1,6 +1,6 @@
 # ffetch
 
-Simple thin fetch wrapper. `ffetch` means more human **F**riendly **FETCH**.
+Simple thin fetch wrapper. `ffetch` means more human **"f"**riendly **"fetch"**.
 
 [![npm version](https://badge.fury.io/js/ffetch.svg)](http://badge.fury.io/js/ffetch)
 [![Circle CI](https://circleci.com/gh/axross/ffetch/tree/stable.svg?style=svg&circle-token=4ebcc03d8e89eec153012626ccb181ec2986ac64)](https://circleci.com/gh/axross/ffetch/tree/stable)
@@ -116,8 +116,8 @@ Call `fetch()` like human friendly.
 
 ```javascript
 ffetch.get('/path/to/api/page/:page', {
-  param: { page: 3 },
-  query: { q: 'github', order: 'id' },
+  params: { page: 3 },
+  queries: { q: 'github', order: 'id' },
 })
   .then(res => res.json())
   .then(json => console.log(json))
@@ -127,9 +127,9 @@ ffetch.get('/path/to/api/page/:page', {
 |argument         |type  |                                                     |
 |:--------------- |:---- |:--------------------------------------------------- |
 |`url`            |string|URL of request.                                      |
-|`options.param`  |object|URL parameters.                                      |
-|`options.query`  |object|URL queries.                                         |
-|`options.header` |object|Request headers.                                     |
+|`options.params` |object|URL parameters.                                      |
+|`options.queries`|object|URL queries.                                         |
+|`options.headers`|object|Request headers.                                     |
 |`options.body`   |      |Request body. If it is an object or an array, It will be a string by `JSON.stringify()`.|
 |`options.timeout`|number|If request exceeded this value, `ffetch()` throws an error(promisified).|
 |`options.***`    |      |Some other options.                                  |

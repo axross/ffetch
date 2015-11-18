@@ -1,5 +1,6 @@
 {
   "name": "ffetch",
+  "description": "Simple thin fetch wrapper. \"ffetch\" means more human \"f\"riendly \"fetch\".",
   "version": "0.0.2",
   "main": "./distributions/ffetch.js",
   "scripts": {
@@ -18,7 +19,6 @@
     "url": "https://github.com/axross/ffetch/issues"
   },
   "homepage": "https://github.com/axross/ffetch#readme",
-  "description": "",
   "dependencies": {
     "is-plain-object": "^2.0.1",
     "querystring": "^0.2.0"
