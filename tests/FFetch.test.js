@@ -242,3 +242,90 @@ test('FFetch#friendlyFetch() reject the Promise when time passes than timeout', 
       clearTimeout(timeoutIdOfFF);
     });
 });
+
+test('FFetch#friendlyFetch uses this.baseUrl as prefix for this.url', t => {
+  t.plan(1);
+
+  const ff = new FFetch({
+    baseUrl: 'http://i.am.base',
+    fetch: fullUrl => {
+      t.equal(fullUrl, 'http://i.am.base/join/me');
+
+      return Promise.resolve();
+    },
+  });
+
+  ff.friendlyFetch('/join/me', { method: 'GET' });
+});
+
+test('FFetch#friendlyFetch merges this.headers to this.defaultHeaders', t => {
+  t.plan(1);
+
+  const ff = new FFetch({
+    headers: {
+      foo: 'bar',
+    },
+    fetch: (_, parsedOptions) => {
+      t.deepEqual(parsedOptions.headers, {
+        foo: 'bar',
+        buz: 'qux',
+      });
+
+      return Promise.resolve();
+    },
+  });
+
+  ff.friendlyFetch('/join/me', {
+    method: 'GET',
+    headers: {
+      buz: 'qux',
+    },
+  });
+});
+
+test('FFetch#friendlyFetch() resolves url, method, params, queries, headers and body', t => {
+  t.plan(4);
+
+  const ff = new FFetch({
+    fetch: (fullUrl, parsedOptions) => {
+      t.equal(
+        fullUrl,
+        '/path/to/api/post/98/comment/345?foo=bar&baz=qux'
+      );
+      t.deepEqual(parsedOptions.headers, {
+        'content-type': 'application/json',
+        accept: 'application/json',
+        'x-access-token': '123456789ABCDEF0',
+      });
+      t.equal(parsedOptions.body, JSON.stringify({
+        abc: 123,
+        def: 456,
+      }));
+
+      return Promise.resolve();
+    },
+  });
+
+  ff.friendlyFetch('/path/to/api/post/:id/comment/:commentId', {
+    method: 'GET',
+    params: {
+      id: 98,
+      commentId: 345,
+    },
+    queries: {
+      foo: 'bar',
+      baz: 'qux',
+    },
+    headers: {
+      'Accept': 'application/json',
+      'X-Access-Token': '123456789ABCDEF0',
+    },
+    body: {
+      abc: 123,
+      def: 456,
+    },
+  })
+    .then(() => {
+      t.ok(true, 'should be called');
+    });
+});

@@ -62,11 +62,11 @@ export class FFetch {
 
   friendlyFetch(url, options) {
     const method = FFetch.sanitizeMethod(options.method);
-    const fullUrl = FFetch.createFullUrl(
-      this.baseUrl + url,
-      options.params,
-      options.queries
-    );
+    const fullUrl = FFetch.createFullUrl({
+      base: this.baseUrl + url,
+      params: options.params,
+      queries: options.queries,
+    });
     let timeout = parseInt(options.timeout, 10);
     let headers = FFetch.lowercaseHeaderKeys(
       Object.assign({}, this.defaultHeaders, options.headers)
@@ -136,6 +136,8 @@ export class FFetch {
   }
 
   static sanitizeMethod(method) {
+    if (!method) throw new TypeError('method is not given');
+
     const upperCased = String(method).toUpperCase();
 
     if (AVAILABLE_METHODS.indexOf(upperCased) === -1) {
