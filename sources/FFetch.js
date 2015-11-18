@@ -146,7 +146,7 @@ export class FFetch {
     const output = {};
 
     // replace keys of headers to lower case
-    for (const key of input) {
+    for (const key of Object.keys(input)) {
       output[key.toLowerCase()] = input[key];
     }
 

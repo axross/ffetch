@@ -150,3 +150,19 @@ test('FFetch.sanitizeMethod() throws a TypeError if method is not unavailable on
     });
   });
 });
+
+test('FFetch.lowercaseHeaderKeys()', t => {
+  t.plan(1);
+
+  t.deepEqual(FFetch.lowercaseHeaderKeys({
+    'Content-Type': 'application/json',
+    'X-Auth-Token': '123456789ABCDEF0',
+    'are-you-ok': 'of cause',
+    camelCase: 'Will be lowercased',
+  }), {
+    'content-type': 'application/json',
+    'x-auth-token': '123456789ABCDEF0',
+    'are-you-ok': 'of cause',
+    camelcase: 'Will be lowercased',
+  });
+});
