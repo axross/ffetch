@@ -1,6 +1,6 @@
 import test from 'tape';
 import querystring from 'querystring';
-import ffetch, { FFetch } from '../sources'
+import ffetch, { FFetch } from '../sources';
 
 test('FFetch.createFullUrl() helps to parse the URL using base, params and queries', t => {
   const patterns = [
@@ -114,6 +114,39 @@ test('FFetch.createFullUrl() throws a TypeError if params includes a string of v
     return FFetch.createFullUrl({
       base: '',
       params: { foo: ':bar' },
+    });
+  });
+});
+
+test('FFetch.sanitizeMethod() uppercases a method', t => {
+  const patterns = [
+    'get',
+    'POST',
+    'pUt',
+    'Delete',
+  ];
+
+  t.plan(patterns.length);
+
+  patterns.forEach(method => {
+    t.equal(FFetch.sanitizeMethod(method), method.toUpperCase());
+  });
+});
+
+test('FFetch.sanitizeMethod() throws a TypeError if method is not unavailable one', t => {
+  const invalidPatterns = [
+    'GETS',
+    'guts',
+    'Posting',
+    'REMOVE',
+    'PATCH',
+  ];
+
+  t.plan(invalidPatterns.length);
+
+  invalidPatterns.forEach(method => {
+    t.throws(() => {
+      return FFetch.sanitizeMethod(method);
     });
   });
 });
