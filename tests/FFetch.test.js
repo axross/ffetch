@@ -49,11 +49,11 @@ test('FFetch.createFullUrl() helps to parse the URL using base, params and queri
     },
     {
       input: {
-        base: 'a'
+        base: 'a',
       },
       expected: 'a',
       isNeedQueryString: false,
-    }
+    },
   ];
 
   t.plan(patterns.length);
@@ -76,7 +76,9 @@ test('FFetch.createFullUrl() throws a TypeError if params is not a plain-object'
     {},
     { foo: 'bar' },
     { foo: 12 },
+    /* eslint-disable no-undefined */
     undefined,
+    /* eslint-enable no-undefined */
   ];
 
   const invalidPatterns = [
