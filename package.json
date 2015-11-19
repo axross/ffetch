@@ -1,7 +1,7 @@
 {
   "name": "ffetch",
   "description": "Simple thin fetch wrapper. \"ffetch\" means more human \"f\"riendly \"fetch\".",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "main": "./distributions/ffetch.js",
   "scripts": {
     "babel": "babel ./sources --out-dir ./distributions",
