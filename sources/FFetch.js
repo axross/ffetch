@@ -21,7 +21,7 @@ export class FFetch {
     this.baseUrl = baseUrl;
     this.defaultHeaders = headers;
     this.defaultTimeout = timeout;
-    this.fetch = fetch;
+    this.fetch = (...args) => fetch(...args);
   }
 
   get(url, options) {

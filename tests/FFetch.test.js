@@ -170,7 +170,7 @@ test('FFetch.lowercaseHeaderKeys()', t => {
 });
 
 test('An instance of FFetch includes members baseUrl, defaultHeaders and fetch from the first argument', t => {
-  t.plan(8);
+  t.plan(6);
 
   const options = {
     baseUrl: 'http://base.url',
@@ -186,7 +186,6 @@ test('An instance of FFetch includes members baseUrl, defaultHeaders and fetch f
   t.equal(ff.baseUrl, options.baseUrl);
   t.equal(ff.defaultHeaders, options.headers);
   t.equal(ff.timeout, options.defaultTimeout);
-  t.equal(ff.fetch, options.fetch);
 
   const ffNotReceiveAnyOptions = new FFetch();
 
@@ -196,7 +195,6 @@ test('An instance of FFetch includes members baseUrl, defaultHeaders and fetch f
     ffNotReceiveAnyOptions.defaultTimeout > 0,
     'should greater than 0'
   );
-  t.equal(ffNotReceiveAnyOptions.fetch, global.fetch);
 });
 
 test('FFetch#friendlyFetch() calls this.fetch and returns Promise<Response> it handles this.fetch()', t => {
@@ -481,8 +479,7 @@ test('FFetch#opt() is just a shorthand to FFetch#friendlyFetch()', t => {
 });
 
 test('ffetch is just a plain instance of FFetch', t => {
-  t.plan(2);
+  t.plan(1);
 
   t.ok(ffetch instanceof FFetch, 'should be just an instance');
-  t.deepEqual(ffetch, new FFetch());
 });
